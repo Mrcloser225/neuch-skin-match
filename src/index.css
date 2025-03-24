@@ -55,8 +55,8 @@
     @apply bg-background/80 backdrop-blur-md;
   }
   
-  .transition-all {
-    @apply transition-all duration-300 ease-in-out;
+  .custom-transition {
+    transition: all 300ms ease-in-out;
   }
   
   .page-transition-enter {
@@ -64,7 +64,8 @@
   }
   
   .page-transition-enter-active {
-    @apply opacity-100 translate-y-0 transition-all duration-300 ease-out;
+    @apply opacity-100 translate-y-0;
+    transition: all 300ms ease-out;
   }
   
   .page-transition-exit {
@@ -72,11 +73,12 @@
   }
   
   .page-transition-exit-active {
-    @apply opacity-0 transition-all duration-200 ease-in;
+    @apply opacity-0;
+    transition: all 200ms ease-in;
   }
   
   .button-hover {
-    @apply transition-all duration-300 ease-out;
+    transition: all 300ms ease-out;
   }
   
   .button-hover:hover {
@@ -84,7 +86,8 @@
   }
   
   .neu-button {
-    @apply bg-neuch-100 rounded-lg px-6 py-3 font-medium transition-all duration-300;
+    @apply bg-neuch-100 rounded-lg px-6 py-3 font-medium;
+    transition: all 300ms;
     box-shadow: 6px 6px 12px #d5d0c4, -6px -6px 12px #ffffff;
   }
   
