@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { SkinProvider } from "@/contexts/SkinContext";
 
 import Index from "./pages/Index";
 import CameraPage from "./pages/CameraPage";
@@ -20,15 +21,17 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AnimatePresence mode="wait">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/camera" element={<CameraPage />} />
-            <Route path="/analysis" element={<AnalysisPage />} />
-            <Route path="/results" element={<ResultsPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AnimatePresence>
+        <SkinProvider>
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/camera" element={<CameraPage />} />
+              <Route path="/analysis" element={<AnalysisPage />} />
+              <Route path="/results" element={<ResultsPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AnimatePresence>
+        </SkinProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
