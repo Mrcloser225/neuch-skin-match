@@ -5,7 +5,7 @@ export interface Foundation {
   name: string;
   shade: string;
   color: string;
-  undertone: "warm" | "cool" | "neutral" | "olive";
+  undertone: "cool" | "neutral" | "olive";
   coverage: "light" | "medium" | "full";
   finish: "matte" | "dewy" | "natural" | "satin";
   price: number;
@@ -13,7 +13,7 @@ export interface Foundation {
   link?: string;
 }
 
-// Example foundation data
+// Example foundation data - focusing on cool, neutral, and olive undertones
 export const foundations: Foundation[] = [
   {
     id: "1",
@@ -25,50 +25,6 @@ export const foundations: Foundation[] = [
     coverage: "medium",
     finish: "matte",
     price: 39,
-  },
-  {
-    id: "2",
-    brand: "NARS",
-    name: "Natural Radiant Longwear",
-    shade: "Tahoe",
-    color: "#C59A7E",
-    undertone: "warm",
-    coverage: "full",
-    finish: "natural",
-    price: 49,
-  },
-  {
-    id: "3",
-    brand: "Estée Lauder",
-    name: "Double Wear",
-    shade: "3W1 Tawny",
-    color: "#D4A282",
-    undertone: "warm",
-    coverage: "full",
-    finish: "matte",
-    price: 46,
-  },
-  {
-    id: "4",
-    brand: "MAC",
-    name: "Studio Fix Fluid",
-    shade: "NC42",
-    color: "#D3A67F",
-    undertone: "warm",
-    coverage: "medium",
-    finish: "natural",
-    price: 36,
-  },
-  {
-    id: "5",
-    brand: "Dior",
-    name: "Forever Skin Glow",
-    shade: "3WO",
-    color: "#CEA282",
-    undertone: "warm",
-    coverage: "medium",
-    finish: "dewy",
-    price: 52,
   },
   {
     id: "6",
@@ -91,28 +47,6 @@ export const foundations: Foundation[] = [
     coverage: "medium",
     finish: "matte",
     price: 8.99,
-  },
-  {
-    id: "8",
-    brand: "L'Oréal",
-    name: "True Match",
-    shade: "W5 Sand Beige",
-    color: "#DFB196",
-    undertone: "warm",
-    coverage: "light",
-    finish: "natural",
-    price: 10.99,
-  },
-  {
-    id: "9",
-    brand: "Lancôme",
-    name: "Teint Idole Ultra Wear",
-    shade: "320 Bisque W",
-    color: "#DCB191",
-    undertone: "warm",
-    coverage: "full",
-    finish: "matte",
-    price: 47,
   },
   {
     id: "10",
@@ -159,6 +93,40 @@ export const foundations: Foundation[] = [
     finish: "natural",
     price: 50,
   },
+  // Additional cool undertones - medium to dark skin tones
+  {
+    id: "17",
+    brand: "Estée Lauder",
+    name: "Double Wear",
+    shade: "4C1 Outdoor Beige",
+    color: "#BF9378",
+    undertone: "cool",
+    coverage: "full",
+    finish: "matte",
+    price: 46,
+  },
+  {
+    id: "18",
+    brand: "Lancôme",
+    name: "Teint Idole Ultra Wear",
+    shade: "420 Bisque N",
+    color: "#A47860",
+    undertone: "cool",
+    coverage: "full",
+    finish: "matte",
+    price: 47,
+  },
+  {
+    id: "19",
+    brand: "Too Faced",
+    name: "Born This Way",
+    shade: "Mocha",
+    color: "#936B59",
+    undertone: "cool",
+    coverage: "medium",
+    finish: "natural",
+    price: 40,
+  },
   // Olive undertone examples
   {
     id: "14",
@@ -193,10 +161,116 @@ export const foundations: Foundation[] = [
     finish: "dewy",
     price: 48,
   },
+  // Additional olive undertones - medium to dark skin tones
+  {
+    id: "20",
+    brand: "NARS",
+    name: "Natural Radiant Longwear",
+    shade: "Cadiz",
+    color: "#B28B71",
+    undertone: "olive",
+    coverage: "full", 
+    finish: "natural",
+    price: 49,
+  },
+  {
+    id: "21",
+    brand: "Fenty Beauty",
+    name: "Pro Filt'r Hydrating",
+    shade: "350",
+    color: "#A37A5E",
+    undertone: "olive",
+    coverage: "medium",
+    finish: "natural",
+    price: 38,
+  },
+  {
+    id: "22",
+    brand: "Dior",
+    name: "Backstage Face & Body",
+    shade: "4WO",
+    color: "#9A7A64",
+    undertone: "olive",
+    coverage: "medium",
+    finish: "natural",
+    price: 40,
+  },
+  // Very deep cool
+  {
+    id: "23",
+    brand: "Fenty Beauty",
+    name: "Pro Filt'r Soft Matte",
+    shade: "480",
+    color: "#583E35",
+    undertone: "cool",
+    coverage: "medium",
+    finish: "matte",
+    price: 39,
+  },
+  // Very deep neutral
+  {
+    id: "24",
+    brand: "MAC",
+    name: "Studio Fix Fluid",
+    shade: "NW58",
+    color: "#573C30",
+    undertone: "neutral",
+    coverage: "medium",
+    finish: "matte",
+    price: 36,
+  },
+  // Very deep olive
+  {
+    id: "25",
+    brand: "NARS",
+    name: "Natural Radiant Longwear",
+    shade: "Macao",
+    color: "#5E4334",
+    undertone: "olive",
+    coverage: "full",
+    finish: "natural",
+    price: 49,
+  },
+  // Very fair cool
+  {
+    id: "26",
+    brand: "Bobbi Brown",
+    name: "Skin Foundation",
+    shade: "Alabaster",
+    color: "#F9EFEA",
+    undertone: "cool",
+    coverage: "light",
+    finish: "natural",
+    price: 50,
+  },
+  // Very fair neutral
+  {
+    id: "27",
+    brand: "NARS",
+    name: "Sheer Glow",
+    shade: "Oslo",
+    color: "#F8EDDF",
+    undertone: "neutral",
+    coverage: "medium",
+    finish: "natural",
+    price: 47,
+  },
+  // Very fair olive
+  {
+    id: "28",
+    brand: "Kosas",
+    name: "Revealer Foundation",
+    shade: "Fair with Olive",
+    color: "#EDE0CD",
+    undertone: "olive",
+    coverage: "medium",
+    finish: "natural",
+    price: 42,
+  },
 ];
 
 export const getRecommendations = (
-  undertone: "warm" | "cool" | "neutral" | "olive",
+  undertone: "cool" | "neutral" | "olive",
   skinTone: string
 ): { foundation: Foundation; match: number }[] => {
   // Simulate matching logic - this would be where your real algorithm would go

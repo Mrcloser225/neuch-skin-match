@@ -70,7 +70,7 @@ const ResultsPage = () => {
           <div className="flex flex-col gap-6">
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-medium text-neuch-900">Your Perfect Matches</h1>
-              <UndertoneChip type={undertone} className="ml-auto" />
+              {undertone && <UndertoneChip type={undertone} className="ml-auto" />}
             </div>
 
             {capturedImage && (
