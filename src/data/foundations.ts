@@ -5,7 +5,7 @@ export interface Foundation {
   name: string;
   shade: string;
   color: string;
-  undertone: "warm" | "cool" | "neutral";
+  undertone: "warm" | "cool" | "neutral" | "olive";
   coverage: "light" | "medium" | "full";
   finish: "matte" | "dewy" | "natural" | "satin";
   price: number;
@@ -125,10 +125,78 @@ export const foundations: Foundation[] = [
     finish: "matte",
     price: 44,
   },
+  // Cool undertone examples
+  {
+    id: "11",
+    brand: "NARS",
+    name: "Sheer Glow Foundation",
+    shade: "Mont Blanc",
+    color: "#ECD6C7",
+    undertone: "cool",
+    coverage: "medium",
+    finish: "natural",
+    price: 47,
+  },
+  {
+    id: "12",
+    brand: "MAC",
+    name: "Studio Fix Fluid",
+    shade: "NW20",
+    color: "#F0D2BF",
+    undertone: "cool",
+    coverage: "medium",
+    finish: "matte",
+    price: 36,
+  },
+  {
+    id: "13",
+    brand: "Bobbi Brown",
+    name: "Skin Foundation",
+    shade: "Cool Ivory",
+    color: "#F5E1D1",
+    undertone: "cool",
+    coverage: "light",
+    finish: "natural",
+    price: 50,
+  },
+  // Olive undertone examples
+  {
+    id: "14",
+    brand: "Kosas",
+    name: "Tinted Face Oil",
+    shade: "5.5",
+    color: "#C9A987",
+    undertone: "olive",
+    coverage: "light",
+    finish: "dewy",
+    price: 42,
+  },
+  {
+    id: "15",
+    brand: "Rare Beauty",
+    name: "Liquid Touch Foundation",
+    shade: "230N",
+    color: "#D1B095",
+    undertone: "olive",
+    coverage: "medium",
+    finish: "natural",
+    price: 29,
+  },
+  {
+    id: "16",
+    brand: "ILIA",
+    name: "Super Serum Skin Tint",
+    shade: "Matira",
+    color: "#BEA282",
+    undertone: "olive",
+    coverage: "light",
+    finish: "dewy",
+    price: 48,
+  },
 ];
 
 export const getRecommendations = (
-  undertone: "warm" | "cool" | "neutral",
+  undertone: "warm" | "cool" | "neutral" | "olive",
   skinTone: string
 ): { foundation: Foundation; match: number }[] => {
   // Simulate matching logic - this would be where your real algorithm would go

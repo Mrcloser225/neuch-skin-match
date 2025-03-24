@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
 
-type UndertoneType = "warm" | "cool" | "neutral";
+type UndertoneType = "warm" | "cool" | "neutral" | "olive";
 
 interface UndertoneChipProps {
   type: UndertoneType;
@@ -35,12 +35,19 @@ const UndertoneChip = ({
       text: "text-gray-800",
       selectedBg: "bg-gray-100",
     },
+    olive: {
+      bg: "bg-green-50",
+      border: "border-green-200",
+      text: "text-green-800",
+      selectedBg: "bg-green-100",
+    },
   };
 
   const labels = {
     warm: "Warm",
     cool: "Cool",
     neutral: "Neutral",
+    olive: "Olive",
   };
 
   const color = colors[type];

@@ -4,8 +4,8 @@ import { createContext, useState, useContext, ReactNode } from "react";
 interface SkinContextType {
   capturedImage: string | null;
   setCapturedImage: (image: string | null) => void;
-  undertone: "warm" | "cool" | "neutral" | null;
-  setUndertone: (undertone: "warm" | "cool" | "neutral" | null) => void;
+  undertone: "warm" | "cool" | "neutral" | "olive" | null;
+  setUndertone: (undertone: "warm" | "cool" | "neutral" | "olive" | null) => void;
   skinTone: string | null;
   setSkinTone: (tone: string | null) => void;
 }
@@ -14,7 +14,7 @@ const SkinContext = createContext<SkinContextType | null>(null);
 
 export const SkinProvider = ({ children }: { children: ReactNode }) => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [undertone, setUndertone] = useState<"warm" | "cool" | "neutral" | null>(null);
+  const [undertone, setUndertone] = useState<"warm" | "cool" | "neutral" | "olive" | null>(null);
   const [skinTone, setSkinTone] = useState<string | null>(null);
 
   return (

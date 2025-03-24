@@ -16,7 +16,7 @@ const AnalysisPage = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [analysisStage, setAnalysisStage] = useState(0);
   const [analysisDone, setAnalysisDone] = useState(false);
-  const [detectedUndertone, setDetectedUndertone] = useState<"warm" | "cool" | "neutral">("warm");
+  const [detectedUndertone, setDetectedUndertone] = useState<"warm" | "cool" | "neutral" | "olive">("neutral");
   const [detectedTone, setDetectedTone] = useState("#D3A67F"); // Detected skin tone color
 
   useEffect(() => {
@@ -129,12 +129,26 @@ const AnalysisPage = () => {
                 <div className="bg-neuch-50 rounded-xl p-4 space-y-4">
                   <div>
                     <p className="text-sm text-neuch-600 mb-2">Your undertone:</p>
-                    <div className="flex gap-2">
-                      <UndertoneChip type="warm" selected={detectedUndertone === "warm"} />
-                      <UndertoneChip type="cool" selected={detectedUndertone === "cool"} />
+                    <div className="flex flex-wrap gap-2">
+                      <UndertoneChip 
+                        type="warm" 
+                        selected={detectedUndertone === "warm"} 
+                        onClick={() => setDetectedUndertone("warm")}
+                      />
+                      <UndertoneChip 
+                        type="cool" 
+                        selected={detectedUndertone === "cool"} 
+                        onClick={() => setDetectedUndertone("cool")}
+                      />
                       <UndertoneChip
                         type="neutral"
                         selected={detectedUndertone === "neutral"}
+                        onClick={() => setDetectedUndertone("neutral")}
+                      />
+                      <UndertoneChip
+                        type="olive"
+                        selected={detectedUndertone === "olive"}
+                        onClick={() => setDetectedUndertone("olive")}
                       />
                     </div>
                   </div>
