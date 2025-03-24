@@ -1,6 +1,12 @@
 
 import { createContext, useState, useContext, ReactNode } from "react";
 
+// Define skin conditions type
+type SkinCondition = "normal" | "eczema" | "vitiligo" | "albinism" | "hyperpigmentation" | null;
+
+// Define subscription tier type
+type SubscriptionTier = "free" | "premium" | "lifetime" | null;
+
 interface SkinContextType {
   capturedImage: string | null;
   setCapturedImage: (image: string | null) => void;
@@ -8,6 +14,23 @@ interface SkinContextType {
   setUndertone: (undertone: "cool" | "neutral" | "olive" | null) => void;
   skinTone: string | null;
   setSkinTone: (tone: string | null) => void;
+  skinCondition: SkinCondition;
+  setSkinCondition: (condition: SkinCondition) => void;
+  isLoggedIn: boolean;
+  setIsLoggedIn: (status: boolean) => void;
+  subscriptionTier: SubscriptionTier; 
+  setSubscriptionTier: (tier: SubscriptionTier) => void;
+  userProfile: {
+    email: string | null;
+    name: string | null;
+    savedFoundations: Array<{ brand: string; shade: string }>;
+  };
+  setUserProfile: (profile: { 
+    email: string | null; 
+    name: string | null; 
+    savedFoundations?: Array<{ brand: string; shade: string }>;
+  }) => void;
+  addSavedFoundation: (foundation: { brand: string; shade: string }) => void;
 }
 
 const SkinContext = createContext<SkinContextType | null>(null);
@@ -16,6 +39,25 @@ export const SkinProvider = ({ children }: { children: ReactNode }) => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [undertone, setUndertone] = useState<"cool" | "neutral" | "olive" | null>(null);
   const [skinTone, setSkinTone] = useState<string | null>(null);
+  const [skinCondition, setSkinCondition] = useState<SkinCondition>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>("free");
+  const [userProfile, setUserProfile] = useState<{
+    email: string | null;
+    name: string | null;
+    savedFoundations: Array<{ brand: string; shade: string }>;
+  }>({
+    email: null,
+    name: null,
+    savedFoundations: [],
+  });
+
+  const addSavedFoundation = (foundation: { brand: string; shade: string }) => {
+    setUserProfile(prev => ({
+      ...prev,
+      savedFoundations: [...prev.savedFoundations, foundation]
+    }));
+  };
 
   return (
     <SkinContext.Provider
@@ -26,6 +68,15 @@ export const SkinProvider = ({ children }: { children: ReactNode }) => {
         setUndertone,
         skinTone,
         setSkinTone,
+        skinCondition,
+        setSkinCondition,
+        isLoggedIn,
+        setIsLoggedIn,
+        subscriptionTier,
+        setSubscriptionTier,
+        userProfile,
+        setUserProfile,
+        addSavedFoundation,
       }}
     >
       {children}
