@@ -25,9 +25,9 @@ interface SkinContextType {
     name: string | null;
     savedFoundations: Array<{ brand: string; shade: string }>;
   };
-  setUserProfile: (profile: { 
-    email: string | null; 
-    name: string | null; 
+  setUserProfile: (profile: {
+    email: string | null;
+    name: string | null;
     savedFoundations?: Array<{ brand: string; shade: string }>;
   }) => void;
   addSavedFoundation: (foundation: { brand: string; shade: string }) => void;
@@ -42,7 +42,7 @@ export const SkinProvider = ({ children }: { children: ReactNode }) => {
   const [skinCondition, setSkinCondition] = useState<SkinCondition>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>("free");
-  const [userProfile, setUserProfile] = useState<{
+  const [userProfile, setUserProfileState] = useState<{
     email: string | null;
     name: string | null;
     savedFoundations: Array<{ brand: string; shade: string }>;
@@ -52,8 +52,22 @@ export const SkinProvider = ({ children }: { children: ReactNode }) => {
     savedFoundations: [],
   });
 
+  // Custom setter for userProfile that handles the optional savedFoundations
+  const setUserProfile = (profile: {
+    email: string | null;
+    name: string | null;
+    savedFoundations?: Array<{ brand: string; shade: string }>;
+  }) => {
+    setUserProfileState(prev => ({
+      ...prev,
+      email: profile.email,
+      name: profile.name,
+      savedFoundations: profile.savedFoundations || prev.savedFoundations,
+    }));
+  };
+
   const addSavedFoundation = (foundation: { brand: string; shade: string }) => {
-    setUserProfile(prev => ({
+    setUserProfileState(prev => ({
       ...prev,
       savedFoundations: [...prev.savedFoundations, foundation]
     }));

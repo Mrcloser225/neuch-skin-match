@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Camera, ChevronRight } from "lucide-react";
@@ -6,9 +7,11 @@ import { Camera, ChevronRight } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import Logo from "@/components/Logo";
 import Button from "@/components/Button";
+import HowItWorksModal from "@/components/HowItWorksModal";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   const startScan = () => {
     navigate("/camera");
@@ -72,14 +75,19 @@ const Index = () => {
             transition={{ delay: 0.8 }}
           >
             <button 
-              className="flex items-center text-sm text-neuch-500 hover:text-neuch-700"
-              onClick={() => {}}
+              className="flex items-center text-sm text-neuch-500 hover:text-neuch-700 transition-colors"
+              onClick={() => setShowHowItWorks(true)}
             >
               Learn how it works
               <ChevronRight size={16} className="ml-1" />
             </button>
           </motion.div>
         </footer>
+
+        <HowItWorksModal 
+          isOpen={showHowItWorks} 
+          onClose={() => setShowHowItWorks(false)} 
+        />
       </div>
     </PageTransition>
   );
