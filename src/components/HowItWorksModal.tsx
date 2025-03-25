@@ -124,7 +124,7 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   transition={{ delay: 0.2 }}
                   className="relative w-64 h-64 rounded-xl bg-neuch-200 overflow-hidden flex items-center justify-center"
                 >
-                  <div className="text-5xl text-neuch-400">💾</div>
+                  <div className="text-5xl text-neuch-400">💎</div>
                 </motion.div>
               </div>
             </TabsContent>
