@@ -1,5 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import enTranslations from '../translations/en';
+import esTranslations from '../translations/es';
 
 // Define available languages and their labels
 export const LANGUAGES = {
@@ -16,6 +18,13 @@ export const LANGUAGES = {
   ru: { label: "Russian", nativeName: "Русский" },
   tr: { label: "Turkish", nativeName: "Türkçe" },
   // Additional languages can be added here
+};
+
+// Available translations
+const translationFiles: Record<string, Record<string, string>> = {
+  en: enTranslations,
+  es: esTranslations,
+  // Add more languages as they become available
 };
 
 // Type for available language codes
@@ -59,7 +68,7 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
   });
   
   // Translations state
-  const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [translations, setTranslations] = useState<Record<string, string>>(translationFiles.en);
   
   // RTL languages
   const rtlLanguages: LanguageCode[] = ['ar'];
@@ -67,17 +76,15 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
 
   // Load translations when language changes
   useEffect(() => {
-    const loadTranslations = async () => {
+    const loadTranslations = () => {
       try {
-        const module = await import(`../translations/${language}.ts`);
-        setTranslations(module.default);
+        // Get translations for selected language or fallback to English
+        const translationData = translationFiles[language] || translationFiles.en;
+        setTranslations(translationData);
       } catch (error) {
         console.error(`Failed to load translations for ${language}`, error);
         // Fall back to English if translations fail to load
-        if (language !== 'en') {
-          const enModule = await import('../translations/en.ts');
-          setTranslations(enModule.default);
-        }
+        setTranslations(translationFiles.en);
       }
     };
     
@@ -86,6 +93,7 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
     
     // Set document direction based on language
     document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+    document.documentElement.lang = language;
     
   }, [language, isRtl]);
 

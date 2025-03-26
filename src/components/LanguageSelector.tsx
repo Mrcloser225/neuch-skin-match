@@ -7,6 +7,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
 interface LanguageSelectorProps {
@@ -16,6 +18,10 @@ interface LanguageSelectorProps {
 const LanguageSelector = ({ className }: LanguageSelectorProps) => {
   const { language, setLanguage, t } = useLanguage();
 
+  const handleLanguageChange = (code: LanguageCode) => {
+    setLanguage(code);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={`flex items-center text-sm text-neuch-500 hover:text-neuch-700 transition-colors ${className}`}>
@@ -23,10 +29,12 @@ const LanguageSelector = ({ className }: LanguageSelectorProps) => {
         <span className="hidden sm:inline">{LANGUAGES[language].nativeName}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-h-[300px] overflow-y-auto">
+        <DropdownMenuLabel>{t("language.select")}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
         {Object.entries(LANGUAGES).map(([code, { nativeName }]) => (
           <DropdownMenuItem
             key={code}
-            onClick={() => setLanguage(code as LanguageCode)}
+            onClick={() => handleLanguageChange(code as LanguageCode)}
             className="flex items-center justify-between"
           >
             <span>{nativeName}</span>
