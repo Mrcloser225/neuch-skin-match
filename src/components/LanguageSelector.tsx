@@ -18,6 +18,7 @@ interface LanguageSelectorProps {
 const LanguageSelector = ({ className }: LanguageSelectorProps) => {
   const { language, setLanguage, t } = useLanguage();
 
+  // Note: We don't need a separate handler function anymore since the context handles everything
   const handleLanguageChange = (code: LanguageCode) => {
     setLanguage(code);
   };

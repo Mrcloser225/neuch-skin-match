@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import enTranslations from '../translations/en';
 import esTranslations from '../translations/es';
+import frTranslations from '../translations/fr';
 
 // Define available languages and their labels
 export const LANGUAGES = {
@@ -24,6 +25,7 @@ export const LANGUAGES = {
 const translationFiles: Record<string, Record<string, string>> = {
   en: enTranslations,
   es: esTranslations,
+  fr: frTranslations,
   // Add more languages as they become available
 };
 
@@ -68,33 +70,31 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
   });
   
   // Translations state
-  const [translations, setTranslations] = useState<Record<string, string>>(translationFiles.en);
+  const [translations, setTranslations] = useState<Record<string, string>>(
+    translationFiles[language] || translationFiles.en
+  );
   
   // RTL languages
   const rtlLanguages: LanguageCode[] = ['ar'];
   const isRtl = rtlLanguages.includes(language);
 
-  // Load translations when language changes
+  // Set language function with immediate translation update
+  const changeLanguage = (lang: LanguageCode) => {
+    setLanguage(lang);
+    // Immediately update translations for immediate UI response
+    setTranslations(translationFiles[lang] || translationFiles.en);
+    // Update localStorage
+    localStorage.setItem('neuch-language', lang);
+    // Update document direction and lang attribute
+    document.documentElement.dir = rtlLanguages.includes(lang) ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+  };
+
+  // Load translations and set document attributes on initial load
   useEffect(() => {
-    const loadTranslations = () => {
-      try {
-        // Get translations for selected language or fallback to English
-        const translationData = translationFiles[language] || translationFiles.en;
-        setTranslations(translationData);
-      } catch (error) {
-        console.error(`Failed to load translations for ${language}`, error);
-        // Fall back to English if translations fail to load
-        setTranslations(translationFiles.en);
-      }
-    };
-    
-    loadTranslations();
-    localStorage.setItem('neuch-language', language);
-    
     // Set document direction based on language
     document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
-    
   }, [language, isRtl]);
 
   // Translation function
@@ -103,7 +103,7 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, isRtl }}>
+    <LanguageContext.Provider value={{ language, setLanguage: changeLanguage, t, isRtl }}>
       {children}
     </LanguageContext.Provider>
   );
