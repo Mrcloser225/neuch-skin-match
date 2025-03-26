@@ -7,7 +7,7 @@ import { Camera as CameraIcon, Upload, Info } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import BackButton from "@/components/BackButton";
 import Logo from "@/components/Logo";
-import Camera from "@/components/Camera";
+import { Camera } from "@/components/index";
 import Button from "@/components/Button";
 import { useSkin } from "@/contexts/SkinContext";
 import { useLanguage } from "@/contexts/LanguageContext";
