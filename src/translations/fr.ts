@@ -50,6 +50,23 @@ const translations = {
   
   // Language selector
   "language.select": "Sélectionner la langue",
+  
+  // Authentication
+  "auth.signin": "Se connecter",
+  "auth.signup": "S'inscrire",
+  "auth.signout": "Se déconnecter",
+  "auth.email": "Email",
+  "auth.password": "Mot de passe",
+  "auth.name": "Nom complet",
+  "auth.continue_with": "Ou continuer avec",
+  "auth.already_account": "Vous avez déjà un compte?",
+  "auth.no_account": "Vous n'avez pas de compte?",
+  "auth.create_account": "Créer un compte",
+  "auth.login_success": "Connexion réussie",
+  "auth.login_error": "Échec de la connexion",
+  "auth.signup_success": "Compte créé avec succès",
+  "auth.signup_error": "Échec de la création du compte",
+  "auth.logout_success": "Déconnexion réussie",
 };
 
 export default translations;

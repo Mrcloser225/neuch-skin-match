@@ -9,6 +9,7 @@ import Logo from "@/components/Logo";
 import Button from "@/components/Button";
 import HowItWorksModal from "@/components/HowItWorksModal";
 import LanguageSelector from "@/components/LanguageSelector";
+import LoginButton from "@/components/LoginButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
@@ -24,7 +25,9 @@ const Index = () => {
     <PageTransition>
       <div className="min-h-screen flex flex-col">
         <header className="p-6 flex items-center justify-between">
-          <div className="flex-1" />
+          <div className="flex-1 flex items-center">
+            <LoginButton />
+          </div>
           <Logo size="lg" className="flex-1 flex justify-center" />
           <div className="flex-1 flex justify-end">
             <LanguageSelector />
