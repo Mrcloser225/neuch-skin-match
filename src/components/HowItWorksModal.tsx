@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface HowItWorksModalProps {
   isOpen: boolean;
@@ -15,13 +16,15 @@ interface HowItWorksModalProps {
 }
 
 const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
+  const { t, isRtl } = useLanguage();
+  
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-neuch-50">
+      <DialogContent className={`sm:max-w-[600px] p-0 overflow-hidden bg-neuch-50 ${isRtl ? 'rtl' : 'ltr'}`}>
         <DialogHeader className="p-6 pb-2">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl font-serif text-neuch-900">
-              How Neuch Works
+              {t("how.title")}
             </DialogTitle>
             <button
               onClick={onClose}
@@ -35,26 +38,25 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
         <Tabs defaultValue="capture" className="p-6 pt-2">
           <TabsList className="mb-6 bg-neuch-100 p-1">
             <TabsTrigger value="capture" className="text-sm">
-              1. Capture
+              {t("how.step1")}
             </TabsTrigger>
             <TabsTrigger value="analyze" className="text-sm">
-              2. Analyze
+              {t("how.step2")}
             </TabsTrigger>
             <TabsTrigger value="match" className="text-sm">
-              3. Match
+              {t("how.step3")}
             </TabsTrigger>
             <TabsTrigger value="save" className="text-sm">
-              4. Save
+              {t("how.step4")}
             </TabsTrigger>
           </TabsList>
 
           <div className="space-y-6">
             <TabsContent value="capture" className="space-y-4">
               <div className="glass-card p-4">
-                <h3 className="text-lg font-medium text-neuch-900 mb-2">Take a Clear Selfie</h3>
+                <h3 className="text-lg font-medium text-neuch-900 mb-2">{t("how.capture.title")}</h3>
                 <p className="text-neuch-700">
-                  Use your device's camera to take a well-lit photo of your face in natural light. 
-                  Our app provides guidance for optimal lighting conditions.
+                  {t("how.capture.description")}
                 </p>
               </div>
               <div className="flex justify-center">
@@ -71,10 +73,9 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
 
             <TabsContent value="analyze" className="space-y-4">
               <div className="glass-card p-4">
-                <h3 className="text-lg font-medium text-neuch-900 mb-2">AI Analysis</h3>
+                <h3 className="text-lg font-medium text-neuch-900 mb-2">{t("how.analyze.title")}</h3>
                 <p className="text-neuch-700">
-                  Our advanced AI technology analyzes your skin's undertone and tone from the photo. 
-                  The system accounts for different skin conditions and lighting variations.
+                  {t("how.analyze.description")}
                 </p>
               </div>
               <div className="flex justify-center">
@@ -91,10 +92,9 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
 
             <TabsContent value="match" className="space-y-4">
               <div className="glass-card p-4">
-                <h3 className="text-lg font-medium text-neuch-900 mb-2">Find Your Perfect Match</h3>
+                <h3 className="text-lg font-medium text-neuch-900 mb-2">{t("how.match.title")}</h3>
                 <p className="text-neuch-700">
-                  Based on your unique skin profile, we recommend foundation shades from various brands that will 
-                  perfectly match your complexion, focusing on cool, neutral, and olive undertones.
+                  {t("how.match.description")}
                 </p>
               </div>
               <div className="flex justify-center">
@@ -111,10 +111,9 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
 
             <TabsContent value="save" className="space-y-4">
               <div className="glass-card p-4">
-                <h3 className="text-lg font-medium text-neuch-900 mb-2">Save Your Favorites</h3>
+                <h3 className="text-lg font-medium text-neuch-900 mb-2">{t("how.save.title")}</h3>
                 <p className="text-neuch-700">
-                  Create an account to save your recommended shades and access them anytime. 
-                  Premium subscribers get additional features like unlimited shade matches, and detailed comparisons.
+                  {t("how.save.description")}
                 </p>
               </div>
               <div className="flex justify-center">
@@ -132,8 +131,7 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
 
           <div className="mt-8 text-center">
             <p className="text-xs text-neuch-500">
-              Neuch uses advanced AI to help all skin types find their perfect foundation match.
-              For the best results, take photos in natural light and follow the in-app guidance.
+              {t("how.footer")}
             </p>
           </div>
         </Tabs>

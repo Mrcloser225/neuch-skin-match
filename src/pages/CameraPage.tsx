@@ -10,7 +10,9 @@ import Logo from "@/components/Logo";
 import Camera from "@/components/Camera";
 import Button from "@/components/Button";
 import { useSkin } from "@/contexts/SkinContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Input } from "@/components/ui/input";
+import LanguageSelector from "@/components/LanguageSelector";
 import {
   Select,
   SelectContent,
@@ -33,6 +35,7 @@ import {
 const CameraPage = () => {
   const navigate = useNavigate();
   const { setCapturedImage, setSkinCondition, skinCondition, isLoggedIn, subscriptionTier } = useSkin();
+  const { t, isRtl } = useLanguage();
   const [showCamera, setShowCamera] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
@@ -61,10 +64,11 @@ const CameraPage = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex flex-col bg-gradient-to-b from-neuch-50 to-neuch-100">
-        <header className="p-6 flex items-center bg-white/80 backdrop-blur-md border-b border-neuch-200">
+      <div className={`min-h-screen flex flex-col bg-gradient-to-b from-neuch-50 to-neuch-100 ${isRtl ? 'rtl' : 'ltr'}`}>
+        <header className="p-6 flex items-center justify-between bg-white/80 backdrop-blur-md border-b border-neuch-200">
           <BackButton to="/" />
           <Logo className="mx-auto" />
+          <LanguageSelector />
         </header>
 
         <main className="flex-1 flex flex-col items-center justify-center p-6">
@@ -76,11 +80,11 @@ const CameraPage = () => {
           >
             <div className="space-y-2 text-center">
               <h1 className="text-2xl font-medium text-neuch-900">
-                Capture Your Skin Tone
+                {t("camera.title")}
               </h1>
               
               <p className="text-neuch-600">
-                For best results, take a photo in natural light without makeup.
+                {t("camera.subtitle")}
               </p>
             </div>
 
@@ -88,7 +92,7 @@ const CameraPage = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-neuch-800">
-                    Skin Condition
+                    {t("camera.skin_condition")}
                   </label>
                   <TooltipProvider>
                     <Tooltip>
@@ -101,7 +105,7 @@ const CameraPage = () => {
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="text-xs">Select if you have a specific skin condition for more accurate results</p>
+                        <p className="text-xs">{t("camera.info_title")}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -112,14 +116,14 @@ const CameraPage = () => {
                   onValueChange={handleSkinConditionChange}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select skin condition" />
+                    <SelectValue placeholder={t("camera.skin_condition")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="normal">No specific condition</SelectItem>
-                    <SelectItem value="eczema">Eczema</SelectItem>
-                    <SelectItem value="vitiligo">Vitiligo</SelectItem>
-                    <SelectItem value="albinism">Albinism</SelectItem>
-                    <SelectItem value="hyperpigmentation">Hyperpigmentation</SelectItem>
+                    <SelectItem value="normal">{t("camera.condition.normal")}</SelectItem>
+                    <SelectItem value="eczema">{t("camera.condition.eczema")}</SelectItem>
+                    <SelectItem value="vitiligo">{t("camera.condition.vitiligo")}</SelectItem>
+                    <SelectItem value="albinism">{t("camera.condition.albinism")}</SelectItem>
+                    <SelectItem value="hyperpigmentation">{t("camera.condition.hyperpigmentation")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -127,12 +131,12 @@ const CameraPage = () => {
               <Collapsible open={isInfoOpen} onOpenChange={setIsInfoOpen}>
                 <CollapsibleContent>
                   <div className="text-xs text-neuch-600 bg-neuch-50 p-3 rounded-md mt-1 mb-3">
-                    <p>Our enhanced algorithm adapts to various skin conditions for accurate undertone detection:</p>
+                    <p>{t("camera.info_title")}</p>
                     <ul className="mt-1 list-disc pl-4 space-y-1">
-                      <li>Eczema: Accounts for redness and dryness</li>
-                      <li>Vitiligo: Analyzes areas with consistent pigmentation</li>
-                      <li>Albinism: Specialized detection for minimal melanin</li>
-                      <li>Hyperpigmentation: Balances varied pigmentation areas</li>
+                      <li>{t("camera.info.eczema")}</li>
+                      <li>{t("camera.info.vitiligo")}</li>
+                      <li>{t("camera.info.albinism")}</li>
+                      <li>{t("camera.info.hyperpigmentation")}</li>
                     </ul>
                   </div>
                 </CollapsibleContent>
@@ -146,7 +150,7 @@ const CameraPage = () => {
                   icon={<CameraIcon size={18} />}
                   className="w-full bg-neuch-800 text-white hover:bg-neuch-700"
                 >
-                  Take a selfie
+                  {t("camera.take_selfie")}
                 </Button>
               </div>
               
@@ -157,7 +161,7 @@ const CameraPage = () => {
                   className="w-full border-neuch-300"
                   icon={<Upload size={18} />}
                 >
-                  Upload a photo
+                  {t("camera.upload_photo")}
                 </Button>
                 <input
                   type="file"
@@ -173,8 +177,8 @@ const CameraPage = () => {
                 <div className="text-center text-sm text-neuch-600">
                   <p className="mb-2">
                     {subscriptionTier === "free" ? 
-                      "Get unlimited matches with premium" : 
-                      "Sign in to save your foundation matches"}
+                      t("camera.premium_message") : 
+                      t("camera.signin_message")}
                   </p>
                   <div className="flex gap-2 justify-center">
                     <Button 
@@ -183,7 +187,7 @@ const CameraPage = () => {
                       className="border-neuch-300 text-neuch-800"
                       onClick={() => navigate("/login")}
                     >
-                      Sign in
+                      {t("camera.signin")}
                     </Button>
                     {subscriptionTier === "free" && (
                       <Button 
@@ -192,7 +196,7 @@ const CameraPage = () => {
                         className="bg-neuch-800 text-white"
                         onClick={() => navigate("/pricing")}
                       >
-                        Upgrade
+                        {t("camera.upgrade")}
                       </Button>
                     )}
                   </div>
