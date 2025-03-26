@@ -24,8 +24,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <LanguageProvider>
-          <AuthProvider>
-            <SkinProvider>
+          <SkinProvider>
+            <AuthProvider>
               <AnimatePresence mode="wait">
                 <Routes>
                   <Route path="/" element={<Index />} />
@@ -35,8 +35,8 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AnimatePresence>
-            </SkinProvider>
-          </AuthProvider>
+            </AuthProvider>
+          </SkinProvider>
         </LanguageProvider>
       </BrowserRouter>
     </TooltipProvider>
