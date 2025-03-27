@@ -1,11 +1,20 @@
 
 import { Capacitor } from '@capacitor/core';
 
+// Check if Capacitor is available in the current environment
+const isCapacitorAvailable = () => {
+  try {
+    return typeof Capacitor !== 'undefined';
+  } catch (error) {
+    return false;
+  }
+};
+
 // Function to securely store sensitive data
 export const secureStore = async (key: string, value: string): Promise<void> => {
   try {
     // For native mobile apps
-    if (Capacitor.isNativePlatform()) {
+    if (isCapacitorAvailable() && Capacitor.isNativePlatform()) {
       // Using localStorage temporarily - in a real app, you should use
       // a secure storage plugin like @capacitor/secure-storage-plugin
       localStorage.setItem(`secure_${key}`, value);
@@ -25,7 +34,7 @@ export const secureStore = async (key: string, value: string): Promise<void> => 
 export const secureRetrieve = async (key: string): Promise<string | null> => {
   try {
     // For native mobile apps
-    if (Capacitor.isNativePlatform()) {
+    if (isCapacitorAvailable() && Capacitor.isNativePlatform()) {
       return localStorage.getItem(`secure_${key}`);
     } else {
       // For web, decrypt after retrieving
