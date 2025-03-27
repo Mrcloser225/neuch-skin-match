@@ -64,9 +64,13 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl bg-neuch-200 overflow-hidden flex items-center justify-center"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center"
                 >
-                  <div className="text-5xl text-neuch-400">📸</div>
+                  <img 
+                    src="https://images.unsplash.com/photo-1618082693771-07b965357eab?q=80&w=1664&auto=format&fit=crop" 
+                    alt="Woman taking a selfie in good lighting"
+                    className="w-full h-full object-cover"
+                  />
                 </motion.div>
               </div>
             </TabsContent>
@@ -83,9 +87,13 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl bg-neuch-200 overflow-hidden flex items-center justify-center"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center"
                 >
-                  <div className="text-5xl text-neuch-400">🔍</div>
+                  <img 
+                    src="https://images.unsplash.com/photo-1605980776566-0486c3ac7cbd?q=80&w=1887&auto=format&fit=crop" 
+                    alt="AI analyzing skin undertones"
+                    className="w-full h-full object-cover"
+                  />
                 </motion.div>
               </div>
             </TabsContent>
@@ -102,9 +110,13 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl bg-neuch-200 overflow-hidden flex items-center justify-center"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center"
                 >
-                  <div className="text-5xl text-neuch-400">✨</div>
+                  <img 
+                    src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=1480&auto=format&fit=crop" 
+                    alt="Foundation products matched to skin tone"
+                    className="w-full h-full object-cover"
+                  />
                 </motion.div>
               </div>
             </TabsContent>
@@ -121,9 +133,13 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl bg-neuch-200 overflow-hidden flex items-center justify-center"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center"
                 >
-                  <div className="text-5xl text-neuch-400">💎</div>
+                  <img 
+                    src="https://images.unsplash.com/photo-1615357363567-0266aec2f945?q=80&w=1480&auto=format&fit=crop" 
+                    alt="Woman saving her foundation matches"
+                    className="w-full h-full object-cover"
+                  />
                 </motion.div>
               </div>
             </TabsContent>
