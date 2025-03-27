@@ -43,8 +43,10 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "ss01" on, "ss02" on, "cv01" on, "cv03" on;
+    @apply bg-background text-foreground font-instagram;
+    font-feature-settings: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   ::selection {
@@ -113,5 +115,21 @@
   
   .subtle-scroll::-webkit-scrollbar-thumb {
     @apply bg-neuch-300 rounded-full;
+  }
+
+  /* Instagram-like typography styles */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-instagram font-semibold;
+    letter-spacing: -0.01em;
+  }
+
+  p, span, div, button, input, textarea {
+    @apply font-instagram;
+    letter-spacing: 0;
+  }
+
+  .neuch {
+    @apply font-instagram;
+    letter-spacing: -0.02em;
   }
 }

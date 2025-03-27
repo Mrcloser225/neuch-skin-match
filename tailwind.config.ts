@@ -133,8 +133,30 @@ export default {
 				'enter': 'fade-in 0.4s ease-out, scale-in 0.3s ease-out'
 			},
 			fontFamily: {
-				sans: ['"SF Pro Display"', 'Inter', 'system-ui', 'sans-serif'],
+				sans: [
+					'-apple-system',
+					'BlinkMacSystemFont',
+					'"Segoe UI"',
+					'Roboto',
+					'Helvetica',
+					'"Helvetica Neue"',
+					'Arial',
+					'sans-serif',
+					'"Apple Color Emoji"',
+					'"Segoe UI Emoji"',
+					'"Segoe UI Symbol"'
+				],
 				serif: ['"New York"', 'Georgia', 'serif'],
+				instagram: [
+					'-apple-system',
+					'BlinkMacSystemFont',
+					'"Segoe UI"',
+					'Roboto',
+					'Helvetica',
+					'"Helvetica Neue"',
+					'Arial',
+					'sans-serif'
+				],
 			},
 			transitionProperty: {
 				'height': 'height',

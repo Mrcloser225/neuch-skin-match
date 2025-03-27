@@ -24,7 +24,7 @@ const Logo = ({ size = "md", color = "dark", className = "" }: LogoProps) => {
       initial={{ opacity: 0, y: -5 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`font-serif font-medium tracking-tight ${sizes[size]} ${colors[color]} ${className}`}
+      className={`font-instagram font-semibold tracking-tight ${sizes[size]} ${colors[color]} ${className}`}
     >
       neuch
     </motion.div>
