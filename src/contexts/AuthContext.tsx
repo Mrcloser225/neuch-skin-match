@@ -1,5 +1,8 @@
+
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { useSkin } from "./SkinContext";
+import { secureStore, secureRetrieve, secureRemove } from "@/utils/secureStorage";
+import { toast } from "@/hooks/use-toast";
 
 // Define the authentication provider types
 type SocialProvider = "google" | "facebook" | "instagram" | "tiktok" | "email";
@@ -11,6 +14,9 @@ interface User {
   name: string;
   photoUrl?: string;
   provider: SocialProvider;
+  consentGiven: boolean;
+  termsAccepted: boolean;
+  dataProcessingAccepted: boolean;
 }
 
 interface AuthContextType {
@@ -20,7 +26,14 @@ interface AuthContextType {
   login: (provider: SocialProvider) => Promise<void>;
   logout: () => void;
   loginWithEmail: (email: string, password: string) => Promise<void>;
-  registerWithEmail: (email: string, password: string, name: string) => Promise<void>;
+  registerWithEmail: (email: string, password: string, name: string, consentOptions: {
+    termsAccepted: boolean;
+    dataProcessingAccepted: boolean;
+  }) => Promise<void>;
+  updateUserConsent: (consentOptions: {
+    termsAccepted?: boolean;
+    dataProcessingAccepted?: boolean;
+  }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -32,18 +45,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Check for existing session on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("neuch_user");
-    if (storedUser) {
+    const loadStoredUser = async () => {
       try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-        setIsLoggedIn(true);
+        const storedUser = await secureRetrieve("neuch_user");
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          setIsLoggedIn(true);
+        }
       } catch (error) {
         console.error("Failed to parse stored user:", error);
-        localStorage.removeItem("neuch_user");
+        await secureRemove("neuch_user");
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    };
+
+    loadStoredUser();
   }, [setIsLoggedIn]);
 
   // Mock social login function (would be replaced with actual provider SDK implementations)
@@ -60,14 +78,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         name: `Test User (${provider})`,
         photoUrl: "https://randomuser.me/api/portraits/lego/1.jpg",
         provider,
+        consentGiven: true,
+        termsAccepted: true,
+        dataProcessingAccepted: true
       };
       
-      // Store user in localStorage for persistence
-      localStorage.setItem("neuch_user", JSON.stringify(mockUser));
+      // Store user securely
+      await secureStore("neuch_user", JSON.stringify(mockUser));
       setUser(mockUser);
       setIsLoggedIn(true);
     } catch (error) {
       console.error(`Login with ${provider} failed:`, error);
+      toast({
+        title: "Login Failed",
+        description: "An error occurred during authentication. Please try again.",
+        variant: "destructive"
+      });
       throw error;
     } finally {
       setIsLoading(false);
@@ -75,10 +101,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Mock logout function
-  const logout = () => {
-    localStorage.removeItem("neuch_user");
-    setUser(null);
-    setIsLoggedIn(false);
+  const logout = async () => {
+    try {
+      await secureRemove("neuch_user");
+      setUser(null);
+      setIsLoggedIn(false);
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({
+        title: "Logout Failed",
+        description: "An error occurred during logout. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Mock email login
@@ -92,22 +127,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         name: email.split('@')[0],
         provider: "email",
+        consentGiven: true,
+        termsAccepted: true,
+        dataProcessingAccepted: true
       };
-      localStorage.setItem("neuch_user", JSON.stringify(mockUser));
+      await secureStore("neuch_user", JSON.stringify(mockUser));
       setUser(mockUser);
       setIsLoggedIn(true);
     } catch (error) {
       console.error("Email login failed:", error);
+      toast({
+        title: "Login Failed",
+        description: "Invalid email or password.",
+        variant: "destructive"
+      });
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Mock email registration
-  const registerWithEmail = async (email: string, password: string, name: string) => {
+  // Mock email registration with consent options
+  const registerWithEmail = async (
+    email: string, 
+    password: string, 
+    name: string,
+    consentOptions: {
+      termsAccepted: boolean;
+      dataProcessingAccepted: boolean;
+    }
+  ) => {
     setIsLoading(true);
     try {
+      // Validate consent
+      if (!consentOptions.termsAccepted || !consentOptions.dataProcessingAccepted) {
+        throw new Error("You must accept the terms and data processing agreement");
+      }
+      
       // Mock email registration
       console.log(`Registering with email: ${email}...`);
       const mockUser: User = {
@@ -115,15 +171,56 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         name,
         provider: "email",
+        consentGiven: true,
+        termsAccepted: consentOptions.termsAccepted,
+        dataProcessingAccepted: consentOptions.dataProcessingAccepted
       };
-      localStorage.setItem("neuch_user", JSON.stringify(mockUser));
+      await secureStore("neuch_user", JSON.stringify(mockUser));
       setUser(mockUser);
       setIsLoggedIn(true);
     } catch (error) {
       console.error("Email registration failed:", error);
+      const errorMessage = error instanceof Error ? error.message : "Registration failed. Please try again.";
+      toast({
+        title: "Registration Failed",
+        description: errorMessage,
+        variant: "destructive"
+      });
       throw error;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Update user consent
+  const updateUserConsent = async (consentOptions: {
+    termsAccepted?: boolean;
+    dataProcessingAccepted?: boolean;
+  }) => {
+    if (!user) return;
+    
+    try {
+      const updatedUser = {
+        ...user,
+        termsAccepted: consentOptions.termsAccepted ?? user.termsAccepted,
+        dataProcessingAccepted: consentOptions.dataProcessingAccepted ?? user.dataProcessingAccepted,
+        consentGiven: true
+      };
+      
+      await secureStore("neuch_user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      
+      toast({
+        title: "Preferences Updated",
+        description: "Your privacy preferences have been updated successfully."
+      });
+    } catch (error) {
+      console.error("Failed to update consent:", error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update your preferences. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -137,6 +234,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         loginWithEmail,
         registerWithEmail,
+        updateUserConsent,
       }}
     >
       {children}

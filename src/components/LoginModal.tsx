@@ -14,9 +14,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
+import { DialogPortal } from "@radix-ui/react-dialog";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -37,6 +40,8 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [dataProcessingAccepted, setDataProcessingAccepted] = useState(false);
 
   const handleSocialLogin = async (provider: "google" | "facebook" | "instagram" | "tiktok") => {
     try {
@@ -99,9 +104,26 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
       return;
     }
     
+    if (!termsAccepted || !dataProcessingAccepted) {
+      toast({
+        title: "Agreement required",
+        description: "You must accept the Terms of Service and Data Processing Agreement",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
       setIsLoading(true);
-      await registerWithEmail(registerEmail, registerPassword, registerName);
+      await registerWithEmail(
+        registerEmail, 
+        registerPassword, 
+        registerName,
+        {
+          termsAccepted,
+          dataProcessingAccepted
+        }
+      );
       toast({
         title: "Success",
         description: "Account created successfully",
@@ -122,7 +144,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle className="text-xl font-serif">
+          <DialogTitle className="text-xl font-instagram">
             {activeTab === "login" ? "Sign In" : "Create Account"}
           </DialogTitle>
           <DialogClose asChild>
@@ -290,6 +312,41 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   disabled={isLoading}
                 />
               </div>
+              
+              <div className="space-y-3 pt-2">
+                <div className="flex items-start space-x-2">
+                  <Checkbox 
+                    id="terms" 
+                    checked={termsAccepted}
+                    onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+                  />
+                  <div className="grid gap-1.5 leading-none">
+                    <label
+                      htmlFor="terms"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      I accept the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms of Service</Link>
+                    </label>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-2">
+                  <Checkbox 
+                    id="privacy" 
+                    checked={dataProcessingAccepted}
+                    onCheckedChange={(checked) => setDataProcessingAccepted(checked === true)}
+                  />
+                  <div className="grid gap-1.5 leading-none">
+                    <label
+                      htmlFor="privacy"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      I agree to the <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link> and data processing
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
               <Button type="submit" className="w-full" disabled={isLoading}>
                 Create Account
               </Button>

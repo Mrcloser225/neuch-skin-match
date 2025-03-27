@@ -13,9 +13,19 @@ import Index from "./pages/Index";
 import CameraPage from "./pages/CameraPage";
 import AnalysisPage from "./pages/AnalysisPage";
 import ResultsPage from "./pages/ResultsPage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -32,6 +42,8 @@ const App = () => (
                   <Route path="/camera" element={<CameraPage />} />
                   <Route path="/analysis" element={<AnalysisPage />} />
                   <Route path="/results" element={<ResultsPage />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsOfService />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AnimatePresence>
