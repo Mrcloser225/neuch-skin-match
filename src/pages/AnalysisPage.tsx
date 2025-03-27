@@ -41,17 +41,25 @@ const AnalysisPage = () => {
           clearInterval(timer);
           setIsAnalyzing(false);
           setAnalysisDone(true);
-          
-          // Set detected values - in a real app this would come from AI analysis
-          setUndertone(detectedUndertone);
-          setSkinTone(detectedTone);
           return prev;
         }
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [capturedImage, navigate, detectedUndertone, detectedTone, setUndertone, setSkinTone]);
+    // Move state updates outside of render
+    return () => {
+      clearInterval(timer);
+    };
+  }, [capturedImage, navigate]);
+
+  // Use a separate effect to update the skin context values
+  // This avoids the setState during render warning
+  useEffect(() => {
+    if (analysisDone) {
+      setUndertone(detectedUndertone);
+      setSkinTone(detectedTone);
+    }
+  }, [analysisDone, detectedUndertone, detectedTone, setUndertone, setSkinTone]);
 
   const analysisStages = [
     "Scanning facial features...",
