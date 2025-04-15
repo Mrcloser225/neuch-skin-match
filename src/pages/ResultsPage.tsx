@@ -14,6 +14,7 @@ import { useSkin } from "@/contexts/SkinContext";
 import { Foundation, getRecommendations } from "@/data/foundations";
 import PremiumBanner from "@/components/PremiumBanner";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 
 interface Recommendation {
