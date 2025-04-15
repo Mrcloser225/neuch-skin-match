@@ -13,6 +13,7 @@ import Index from "./pages/Index";
 import CameraPage from "./pages/CameraPage";
 import AnalysisPage from "./pages/AnalysisPage";
 import ResultsPage from "./pages/ResultsPage";
+import PricingPage from "./pages/PricingPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
@@ -42,6 +43,7 @@ const App = () => (
                   <Route path="/camera" element={<CameraPage />} />
                   <Route path="/analysis" element={<AnalysisPage />} />
                   <Route path="/results" element={<ResultsPage />} />
+                  <Route path="/pricing" element={<PricingPage />} />
                   <Route path="/privacy" element={<PrivacyPolicy />} />
                   <Route path="/terms" element={<TermsOfService />} />
                   <Route path="*" element={<NotFound />} />

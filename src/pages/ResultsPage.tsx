@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart, RefreshCw, Share2, ShoppingBag } from "lucide-react";
+import { Heart, RefreshCw, Share2, ShoppingBag, Lock } from "lucide-react";
 
 import PageTransition from "@/components/PageTransition";
 import BackButton from "@/components/BackButton";
@@ -12,6 +12,8 @@ import ActionButton from "@/components/ActionButton";
 import UndertoneChip from "@/components/UndertoneChip";
 import { useSkin } from "@/contexts/SkinContext";
 import { Foundation, getRecommendations } from "@/data/foundations";
+import PremiumBanner from "@/components/PremiumBanner";
+import { Button } from "@/components/ui/button";
 
 interface Recommendation {
   foundation: Foundation;
@@ -20,8 +22,9 @@ interface Recommendation {
 
 const ResultsPage = () => {
   const navigate = useNavigate();
-  const { undertone, skinTone, capturedImage } = useSkin();
+  const { undertone, skinTone, capturedImage, subscriptionTier } = useSkin();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const isPremium = subscriptionTier === "premium" || subscriptionTier === "lifetime";
 
   useEffect(() => {
     if (!undertone || !skinTone) {
@@ -54,9 +57,18 @@ const ResultsPage = () => {
     navigate("/camera");
   };
 
+  const handleUpgrade = () => {
+    navigate("/pricing");
+  };
+
   if (!undertone || !skinTone) {
     return null;
   }
+
+  // Display limited results for free users
+  const displayedRecommendations = isPremium 
+    ? recommendations 
+    : recommendations.slice(0, 2);
 
   return (
     <PageTransition>
@@ -89,13 +101,17 @@ const ResultsPage = () => {
               </div>
             )}
 
+            {!isPremium && (
+              <PremiumBanner onUpgrade={handleUpgrade} />
+            )}
+
             <motion.div
               className="grid grid-cols-2 gap-4"
               variants={container}
               initial="hidden"
               animate="show"
             >
-              {recommendations.map(({ foundation, match }) => (
+              {displayedRecommendations.map(({ foundation, match }) => (
                 <motion.div key={foundation.id} variants={item}>
                   <ShadeCard
                     brand={foundation.brand}
@@ -108,6 +124,25 @@ const ResultsPage = () => {
                 </motion.div>
               ))}
             </motion.div>
+
+            {!isPremium && recommendations.length > 2 && (
+              <div className="mt-4">
+                <div className="bg-neuch-50 rounded-lg p-4 border border-neuch-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Lock size={16} className="text-neuch-700" />
+                    <h3 className="text-sm font-medium text-neuch-900">
+                      {recommendations.length - 2} more matches available with Premium
+                    </h3>
+                  </div>
+                  <Button 
+                    className="w-full" 
+                    onClick={handleUpgrade}
+                  >
+                    Upgrade to Premium
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </main>
 
@@ -127,6 +162,7 @@ const ResultsPage = () => {
               icon={<ShoppingBag size={18} className="text-neuch-700" />}
               label="Shop"
               onClick={() => {}}
+              disabled={!isPremium}
             />
             <ActionButton
               icon={<RefreshCw size={18} className="text-neuch-700" />}
