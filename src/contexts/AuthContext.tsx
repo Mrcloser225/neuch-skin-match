@@ -1,7 +1,13 @@
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { useSkin } from "./SkinContext";
-import { secureStore, secureRetrieve, secureRemove } from "@/utils/secureStorage";
+import { 
+  secureStore, 
+  secureRetrieve, 
+  secureRemove, 
+  secureClearAll,
+  validateSessionIntegrity 
+} from "@/utils/secureStorage";
 import { toast } from "@/hooks/use-toast";
 
 // Define the authentication provider types
@@ -17,6 +23,7 @@ interface User {
   consentGiven: boolean;
   termsAccepted: boolean;
   dataProcessingAccepted: boolean;
+  lastActive: string;
 }
 
 interface AuthContextType {
@@ -38,20 +45,65 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// Session timeout in milliseconds (30 minutes)
+const SESSION_TIMEOUT = 30 * 60 * 1000;
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { setIsLoggedIn } = useSkin();
+  
+  // Function to update user's last active timestamp
+  const updateLastActive = async (currentUser: User) => {
+    try {
+      const updatedUser = {
+        ...currentUser,
+        lastActive: Date.now().toString()
+      };
+      await secureStore("neuch_user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    } catch (error) {
+      console.error("Failed to update last active timestamp:", error);
+    }
+  };
+
+  // Check for session timeout
+  const checkSessionTimeout = (storedUser: User) => {
+    const lastActive = parseInt(storedUser.lastActive || "0");
+    const currentTime = Date.now();
+    
+    // If session has timed out, log the user out
+    if (currentTime - lastActive > SESSION_TIMEOUT) {
+      secureRemove("neuch_user");
+      setUser(null);
+      setIsLoggedIn(false);
+      toast({
+        title: "Session Expired",
+        description: "Your session has expired. Please log in again.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    return true;
+  };
 
   // Check for existing session on mount
   useEffect(() => {
     const loadStoredUser = async () => {
       try {
+        // Validate overall session integrity first
+        const isValid = await validateSessionIntegrity();
+        
         const storedUser = await secureRetrieve("neuch_user");
         if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
-          setIsLoggedIn(true);
+          const parsedUser = JSON.parse(storedUser) as User;
+          
+          // Only restore session if it hasn't timed out
+          if (checkSessionTimeout(parsedUser)) {
+            updateLastActive(parsedUser);
+            setUser(parsedUser);
+            setIsLoggedIn(true);
+          }
         }
       } catch (error) {
         console.error("Failed to parse stored user:", error);
@@ -62,6 +114,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     loadStoredUser();
+    
+    // Set up interval to check session validity periodically
+    const intervalId = setInterval(async () => {
+      if (user) {
+        const isSessionValid = await validateSessionIntegrity();
+        if (!isSessionValid) {
+          logout();
+        }
+      }
+    }, 5 * 60 * 1000); // Check every 5 minutes
+    
+    return () => clearInterval(intervalId);
   }, [setIsLoggedIn]);
 
   // Mock social login function (would be replaced with actual provider SDK implementations)
@@ -80,11 +144,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         provider,
         consentGiven: true,
         termsAccepted: true,
-        dataProcessingAccepted: true
+        dataProcessingAccepted: true,
+        lastActive: Date.now().toString()
       };
       
       // Store user securely
       await secureStore("neuch_user", JSON.stringify(mockUser));
+      
+      // Set session data
+      await secureStore('session_token', `session_${Math.random().toString(36).substring(2, 11)}`);
+      await secureStore('user_id', mockUser.id);
+      await secureStore('last_activity', Date.now().toString());
+      
       setUser(mockUser);
       setIsLoggedIn(true);
     } catch (error) {
@@ -103,7 +174,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Mock logout function
   const logout = async () => {
     try {
-      await secureRemove("neuch_user");
+      await secureClearAll(); // Clear all secure data
       setUser(null);
       setIsLoggedIn(false);
     } catch (error) {
@@ -116,10 +187,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Mock email login
+  // Mock email login with additional security
   const loginWithEmail = async (email: string, password: string) => {
     setIsLoading(true);
     try {
+      // Simulate delay for security - prevents timing attacks
+      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
+      
       // Mock email login
       console.log(`Logging in with email: ${email}...`);
       const mockUser: User = {
@@ -129,9 +203,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         provider: "email",
         consentGiven: true,
         termsAccepted: true,
-        dataProcessingAccepted: true
+        dataProcessingAccepted: true,
+        lastActive: Date.now().toString()
       };
+      
+      // Store user and session data
       await secureStore("neuch_user", JSON.stringify(mockUser));
+      await secureStore('session_token', `session_${Math.random().toString(36).substring(2, 11)}`);
+      await secureStore('user_id', mockUser.id);
+      await secureStore('last_activity', Date.now().toString());
+      
       setUser(mockUser);
       setIsLoggedIn(true);
     } catch (error) {
@@ -147,7 +228,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Mock email registration with consent options
+  // Mock email registration with consent options and improved security
   const registerWithEmail = async (
     email: string, 
     password: string, 
@@ -164,6 +245,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("You must accept the terms and data processing agreement");
       }
       
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        throw new Error("Please enter a valid email address");
+      }
+      
+      // Validate password strength
+      if (password.length < 8) {
+        throw new Error("Password must be at least 8 characters long");
+      }
+      
+      // Simulate delay for security
+      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
+      
       // Mock email registration
       console.log(`Registering with email: ${email}...`);
       const mockUser: User = {
@@ -173,9 +268,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         provider: "email",
         consentGiven: true,
         termsAccepted: consentOptions.termsAccepted,
-        dataProcessingAccepted: consentOptions.dataProcessingAccepted
+        dataProcessingAccepted: consentOptions.dataProcessingAccepted,
+        lastActive: Date.now().toString()
       };
+      
+      // Store user and session data securely
       await secureStore("neuch_user", JSON.stringify(mockUser));
+      await secureStore('session_token', `session_${Math.random().toString(36).substring(2, 11)}`);
+      await secureStore('user_id', mockUser.id);
+      await secureStore('last_activity', Date.now().toString());
+      
       setUser(mockUser);
       setIsLoggedIn(true);
     } catch (error) {
@@ -192,7 +294,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Update user consent
+  // Update user consent with improved security
   const updateUserConsent = async (consentOptions: {
     termsAccepted?: boolean;
     dataProcessingAccepted?: boolean;
@@ -204,7 +306,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         ...user,
         termsAccepted: consentOptions.termsAccepted ?? user.termsAccepted,
         dataProcessingAccepted: consentOptions.dataProcessingAccepted ?? user.dataProcessingAccepted,
-        consentGiven: true
+        consentGiven: true,
+        lastActive: Date.now().toString()
       };
       
       await secureStore("neuch_user", JSON.stringify(updatedUser));
