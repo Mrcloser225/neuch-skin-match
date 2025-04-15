@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart, RefreshCw, Share2, ShoppingBag, Lock } from "lucide-react";
+import { Heart, RefreshCw, Share2, ShoppingBag, Lock, Star, BookOpen, Download } from "lucide-react";
 
 import PageTransition from "@/components/PageTransition";
 import BackButton from "@/components/BackButton";
@@ -14,6 +14,7 @@ import { useSkin } from "@/contexts/SkinContext";
 import { Foundation, getRecommendations } from "@/data/foundations";
 import PremiumBanner from "@/components/PremiumBanner";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface Recommendation {
   foundation: Foundation;
@@ -22,9 +23,10 @@ interface Recommendation {
 
 const ResultsPage = () => {
   const navigate = useNavigate();
-  const { undertone, skinTone, capturedImage, subscriptionTier } = useSkin();
+  const { undertone, skinTone, capturedImage, subscriptionTier, addSavedFoundation } = useSkin();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const isPremium = subscriptionTier === "premium" || subscriptionTier === "lifetime";
+  const isLifetime = subscriptionTier === "lifetime";
 
   useEffect(() => {
     if (!undertone || !skinTone) {
@@ -60,6 +62,95 @@ const ResultsPage = () => {
   const handleUpgrade = () => {
     navigate("/pricing");
   };
+  
+  const handleSave = (recommendation: Recommendation) => {
+    if (!isPremium) {
+      toast({
+        title: "Premium Feature",
+        description: "Saving foundations requires a premium subscription",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    addSavedFoundation({
+      brand: recommendation.foundation.brand,
+      shade: recommendation.foundation.shade
+    });
+    
+    toast({
+      title: "Foundation Saved",
+      description: `${recommendation.foundation.brand} ${recommendation.foundation.shade} has been saved to your collection`,
+    });
+  };
+  
+  const handleShareResults = () => {
+    if (!isPremium) {
+      toast({
+        title: "Premium Feature",
+        description: "Sharing results requires a premium subscription",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    toast({
+      title: "Share Feature",
+      description: "Your results have been prepared for sharing",
+    });
+    // In a real app, this would open a share dialog or generate a link
+  };
+  
+  const handleShop = () => {
+    if (!isPremium) {
+      toast({
+        title: "Premium Feature",
+        description: "Shopping links require a premium subscription",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    toast({
+      title: "Shopping Links",
+      description: "Redirecting to partner stores with your matched foundations",
+    });
+    // In a real app, this would redirect to shopping sites
+  };
+  
+  const handleViewTutorials = () => {
+    if (!isLifetime) {
+      toast({
+        title: "Lifetime Exclusive",
+        description: "Beauty tutorials are exclusively available for Lifetime members",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    toast({
+      title: "Beauty Tutorials",
+      description: "Loading your exclusive beauty tutorials library",
+    });
+    // In a real app, this would navigate to a tutorials page
+  };
+  
+  const handleExportReport = () => {
+    if (!isLifetime) {
+      toast({
+        title: "Lifetime Exclusive",
+        description: "Detailed reports are exclusively available for Lifetime members",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    toast({
+      title: "Report Generated",
+      description: "Your comprehensive beauty report is being prepared for download",
+    });
+    // In a real app, this would generate and download a PDF report
+  };
 
   if (!undertone || !skinTone) {
     return null;
@@ -82,6 +173,9 @@ const ResultsPage = () => {
           <div className="flex flex-col gap-6">
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-medium text-neuch-900">Your Perfect Matches</h1>
+              {subscriptionTier === "lifetime" && (
+                <Badge className="bg-violet-600 text-white text-xs">Lifetime Member</Badge>
+              )}
               {undertone && <UndertoneChip type={undertone} className="ml-auto" />}
             </div>
 
@@ -119,7 +213,7 @@ const ResultsPage = () => {
                     shade={foundation.shade}
                     color={foundation.color}
                     match={match}
-                    onClick={() => {}}
+                    onClick={() => handleSave({ foundation, match })}
                   />
                 </motion.div>
               ))}
@@ -143,6 +237,37 @@ const ResultsPage = () => {
                 </div>
               </div>
             )}
+            
+            {isLifetime && (
+              <div className="mt-4">
+                <div className="bg-violet-50 rounded-lg p-4 border border-violet-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Star size={16} className="text-violet-600" />
+                    <h3 className="text-sm font-medium text-neuch-900">
+                      Lifetime Exclusive Features
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 mt-3">
+                    <Button 
+                      variant="outline"
+                      className="border-violet-300 hover:bg-violet-50 flex items-center gap-2"
+                      onClick={handleViewTutorials}
+                    >
+                      <BookOpen size={14} />
+                      <span>Beauty Tutorials</span>
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="border-violet-300 hover:bg-violet-50 flex items-center gap-2"
+                      onClick={handleExportReport}
+                    >
+                      <Download size={14} />
+                      <span>Export Report</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </main>
 
@@ -151,17 +276,19 @@ const ResultsPage = () => {
             <ActionButton
               icon={<Heart size={18} className="text-neuch-700" />}
               label="Save"
-              onClick={() => {}}
+              onClick={() => handleSave(recommendations[0])}
+              disabled={!isPremium}
             />
             <ActionButton
               icon={<Share2 size={18} className="text-neuch-700" />}
               label="Share"
-              onClick={() => {}}
+              onClick={handleShareResults}
+              disabled={!isPremium}
             />
             <ActionButton
               icon={<ShoppingBag size={18} className="text-neuch-700" />}
               label="Shop"
-              onClick={() => {}}
+              onClick={handleShop}
               disabled={!isPremium}
             />
             <ActionButton

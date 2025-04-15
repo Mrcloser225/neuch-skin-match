@@ -14,7 +14,8 @@ const PremiumBanner = ({ onUpgrade }: PremiumBannerProps) => {
         <h3 className="font-medium text-neuch-900">Unlock Premium Features</h3>
       </div>
       <p className="text-sm text-neuch-700 mb-3">
-        Get exclusive access to all makeup recommendations, product information, and personalized shade matching.
+        Get unlimited access to all makeup recommendations, personalized shade matching, 
+        shopping links, and exclusive beauty content.
       </p>
       <Button 
         onClick={onUpgrade} 
