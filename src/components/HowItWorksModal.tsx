@@ -67,8 +67,8 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?q=80&w=3087&auto=format&fit=crop"
-                    alt="Beautiful woman with flawless makeup" 
+                    src="https://images.unsplash.com/photo-1599008633840-052c7f756385?q=80&w=2070&auto=format&fit=crop"
+                    alt="AI generated model with light skin tone and makeup" 
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
@@ -90,8 +90,8 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1598662972299-5408ddb8a3dc?q=80&w=2073&auto=format&fit=crop" 
-                    alt="AI analyzing skin undertones"
+                    src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=80&w=2074&auto=format&fit=crop" 
+                    alt="AI generated model with medium skin tone and makeup"
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
@@ -113,8 +113,8 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1591130901921-3f0652bb3915?q=80&w=2787&auto=format&fit=crop" 
-                    alt="Foundation products matched to skin tone"
+                    src="https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?q=80&w=2070&auto=format&fit=crop" 
+                    alt="AI generated model with dark skin tone and makeup"
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
@@ -136,8 +136,8 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1590156360517-35a4a732a7d1?q=80&w=2787&auto=format&fit=crop" 
-                    alt="Woman saving her foundation matches"
+                    src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=2070&auto=format&fit=crop" 
+                    alt="AI generated model with olive skin tone and makeup"
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
