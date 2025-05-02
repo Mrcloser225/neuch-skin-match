@@ -67,7 +67,7 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1674108334080-4d0ee2708413?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3"
+                    src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=2940&auto=format&fit=crop"
                     alt="Woman taking a selfie in good lighting" 
                     className="w-full h-full object-cover"
                   />
@@ -90,7 +90,7 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1598662972299-5408ddb8a3dc?q=80&w=2073&auto=format&fit=crop&ixlib=rb-4.0.3" 
+                    src="https://images.unsplash.com/photo-1598662972299-5408ddb8a3dc?q=80&w=2073&auto=format&fit=crop" 
                     alt="AI analyzing skin undertones"
                     className="w-full h-full object-cover"
                   />
@@ -113,7 +113,7 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1596704017254-9b5e86781bd5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3" 
+                    src="https://images.unsplash.com/photo-1591130901921-3f0652bb3915?q=80&w=2787&auto=format&fit=crop" 
                     alt="Foundation products matched to skin tone"
                     className="w-full h-full object-cover"
                   />
@@ -136,7 +136,7 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1611080541377-1a92ff81de9e?q=80&w=1984&auto=format&fit=crop&ixlib=rb-4.0.3" 
+                    src="https://images.unsplash.com/photo-1590156360517-35a4a732a7d1?q=80&w=2787&auto=format&fit=crop" 
                     alt="Woman saving her foundation matches"
                     className="w-full h-full object-cover"
                   />
