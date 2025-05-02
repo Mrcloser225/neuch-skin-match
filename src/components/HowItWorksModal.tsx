@@ -67,8 +67,8 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1599008633840-052c7f756385?q=80&w=2070&auto=format&fit=crop"
-                    alt="AI generated model with light skin tone and makeup" 
+                    src="https://images.unsplash.com/photo-1618541211661-5f7b7123e066?q=80&w=2070&auto=format&fit=crop"
+                    alt="AI generated model with albinism and makeup" 
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
@@ -90,8 +90,8 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=80&w=2074&auto=format&fit=crop" 
-                    alt="AI generated model with medium skin tone and makeup"
+                    src="https://images.unsplash.com/photo-1580465446361-8aaa7f5b9312?q=80&w=2070&auto=format&fit=crop" 
+                    alt="AI generated model with hyperpigmentation and makeup"
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
@@ -113,8 +113,8 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?q=80&w=2070&auto=format&fit=crop" 
-                    alt="AI generated model with dark skin tone and makeup"
+                    src="https://images.unsplash.com/photo-1573950320016-e8d12f947062?q=80&w=2070&auto=format&fit=crop" 
+                    alt="AI generated model with vitiligo and makeup"
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
@@ -136,8 +136,8 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=2070&auto=format&fit=crop" 
-                    alt="AI generated model with olive skin tone and makeup"
+                    src="https://images.unsplash.com/photo-1584310735600-3d12642e0235?q=80&w=2070&auto=format&fit=crop" 
+                    alt="AI generated model with deep skin tone and freckles"
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
