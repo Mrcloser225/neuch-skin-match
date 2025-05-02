@@ -64,12 +64,15 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg bg-gray-100"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1618541211661-5f7b7123e066?q=80&w=2070&auto=format&fit=crop"
+                    src="/placeholder.svg"
                     alt="AI generated model with albinism and makeup" 
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg";
+                    }}
                   />
                 </motion.div>
               </div>
@@ -87,12 +90,15 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg bg-gray-100"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1580465446361-8aaa7f5b9312?q=80&w=2070&auto=format&fit=crop" 
+                    src="/placeholder.svg"
                     alt="AI generated model with hyperpigmentation and makeup"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg";
+                    }}
                   />
                 </motion.div>
               </div>
@@ -110,12 +116,15 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg bg-gray-100"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1573950320016-e8d12f947062?q=80&w=2070&auto=format&fit=crop" 
+                    src="/placeholder.svg"
                     alt="AI generated model with vitiligo and makeup"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg";
+                    }}
                   />
                 </motion.div>
               </div>
@@ -133,12 +142,15 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg bg-gray-100"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1584310735600-3d12642e0235?q=80&w=2070&auto=format&fit=crop" 
+                    src="/placeholder.svg"
                     alt="AI generated model with deep skin tone and freckles"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg";
+                    }}
                   />
                 </motion.div>
               </div>
