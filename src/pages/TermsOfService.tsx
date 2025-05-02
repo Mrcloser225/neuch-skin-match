@@ -25,138 +25,145 @@ const TermsOfService = () => {
             <span>Back</span>
           </Button>
           <h1 className="text-2xl font-semibold mb-2">Terms of Service</h1>
-          <p className="text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
+          <p className="text-muted-foreground">Last updated: May 1, 2025</p>
           <Separator className="my-4" />
         </header>
         
         <ScrollArea className="h-[calc(100vh-220px)]">
           <div className="space-y-6 pr-4">
             <section>
-              <h2 className="text-xl font-semibold mb-3">1. Acceptance of Terms</h2>
+              <h2 className="text-xl font-semibold mb-3">1. Welcome to Neuch</h2>
               <p>
-                By accessing or using Neuch, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our application.
+                Thanks for choosing Neuch! These Terms of Service ("Terms") govern your use of our application,
+                website, and services (collectively, the "Services"). By accessing or using our Services, 
+                you're agreeing to these Terms and our Privacy Policy. If you're using our Services on behalf 
+                of an organization, you're agreeing to these Terms on behalf of that organization.
               </p>
             </section>
             
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">2. Use of the Service</h2>
+              <h2 className="text-xl font-semibold mb-3">2. Using Neuch</h2>
               <p className="mb-2">
-                Neuch provides a skin tone analysis service to help users find matching foundation shades. You agree to use the service only for its intended purposes and in compliance with all applicable laws and regulations.
+                Neuch provides advanced skin tone analysis technology to help you find perfect foundation matches.
+                Our service analyzes images of your skin in various lighting conditions and provides personalized 
+                foundation recommendations based on your unique skin characteristics.
               </p>
               <p>
-                You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account.
+                You're responsible for maintaining the security of your account and password. We can't and won't be 
+                liable for any loss or damage from your failure to comply with this security obligation. You're responsible 
+                for all content posted and activity that occurs under your account.
               </p>
             </section>
             
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">3. User Content</h2>
+              <h2 className="text-xl font-semibold mb-3">3. Your Content</h2>
               <p className="mb-2">
-                You retain all rights to any content you submit, post, or display on or through the service, including photos taken for skin analysis.
+                You retain full ownership of any content you submit to Neuch, including your skin photos and analysis results.
+                However, by using our Services, you grant us a limited license to use, store, and analyze your photos solely 
+                for the purpose of providing and improving our Services.
               </p>
               <p>
-                By using our service, you grant Neuch a non-exclusive, royalty-free license to use, process, and analyze your photos solely for the purpose of providing skin tone analysis results. We do not claim ownership of your content.
+                We respect your privacy. By default, your skin analysis photos are stored locally on your device. If you choose 
+                to save your analysis to your account, we apply enterprise-grade security measures to protect your data. Read 
+                our Privacy Policy to learn more about how we handle your information.
               </p>
             </section>
             
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">4. Data Security and Privacy</h2>
+              <h2 className="text-xl font-semibold mb-3">4. Our Proprietary Technology</h2>
               <p className="mb-2">
-                Your privacy and data security are of utmost importance to us. Our Privacy Policy explains how we collect, use, and protect your personal information. By using Neuch, you agree to the collection and use of information in accordance with our Privacy Policy.
+                Our proprietary skin analysis technology represents years of research and development at the intersection 
+                of computer vision, cosmetic science, and machine learning. It's designed to work across a diverse range 
+                of skin tones and conditions.
               </p>
               <p className="mb-2">
-                We implement industry-standard security measures, including encryption, secure data storage, access controls, and regular security assessments, to protect your personal information. Our security practices align with SOC2 Type II and ISO 27001 standards.
+                While we continuously improve our technology, no system is perfect. Our recommendations are provided as guidance 
+                based on available data. Factors like lighting conditions, camera quality, and product formulations can affect 
+                results. We encourage testing samples when possible before purchasing full-sized products.
               </p>
               <p>
-                You acknowledge that no method of transmission over the Internet or method of electronic storage is 100% secure, and we strive to use commercially acceptable means to protect your personal information.
+                All of our software, algorithms, and databases are protected by intellectual property law. Don't attempt to 
+                reverse engineer, decompile, or discover the source code of our software.
               </p>
             </section>
             
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">5. Account Security</h2>
+              <h2 className="text-xl font-semibold mb-3">5. Account Security & Premium Features</h2>
               <p className="mb-2">
-                You are responsible for safeguarding your account credentials and for any activities or actions under your account.
+                Your skin data is precious to us. That's why we've implemented industry-leading security measures to protect 
+                your information, including end-to-end encryption, secure authentication mechanisms, and regular security audits.
               </p>
               <p className="mb-2">
-                We provide security features such as automatic session timeouts and account notifications. You agree to:
+                Some features of Neuch may require payment. By subscribing to a premium plan, you agree to pay the fees indicated 
+                for that service. We may change our fees at any time, but we'll always notify you before those changes affect you.
               </p>
-              <ul className="list-disc ml-6 space-y-1 mb-2">
-                <li>Maintain the confidentiality of your password</li>
-                <li>Notify us immediately of any unauthorized use of your account</li>
-                <li>Ensure that you log out of your account at the end of each session</li>
-                <li>Use a secure and unique password for your Neuch account</li>
-              </ul>
               <p>
-                For enhanced security, we recommend enabling any additional security features we may offer, such as two-factor authentication when available.
+                Subscriptions automatically renew unless you cancel in your account settings at least 24 hours before the end of 
+                the current billing period. You can cancel anytime, but refunds are only provided as required by law.
               </p>
             </section>
             
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">6. Disclaimers and Limitations of Liability</h2>
+              <h2 className="text-xl font-semibold mb-3">6. Limitations & Disclaimers</h2>
               <p className="mb-2">
-                The skin tone analysis and foundation matching recommendations are provided for reference purposes only. Results may vary based on lighting conditions, device camera quality, and other factors.
+                While we strive for perfection, Neuch is provided "as is" without warranty of any kind. We don't warrant that 
+                our Services will be uninterrupted or error-free, that defects will be corrected, or that our Services are free 
+                of viruses or other harmful components.
               </p>
               <p className="mb-2">
-                NEUCH IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+                Neuch is not a medical device or diagnostic tool. Our skin analysis technology is designed to help you find 
+                matching foundation shades, not to diagnose or treat skin conditions. If you have concerns about your skin 
+                health, please consult a dermatologist.
               </p>
               <p>
-                TO THE MAXIMUM EXTENT PERMITTED BY LAW, NEUCH SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES.
+                To the fullest extent permitted by law, Neuch shall not be liable for any indirect, incidental, special, 
+                consequential, or punitive damages, or any loss of profits or revenues.
               </p>
             </section>
             
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">7. Compliance with Laws and Standards</h2>
-              <p className="mb-2">
-                Neuch strives to maintain compliance with relevant industry standards and certifications, including:
-              </p>
-              <ul className="list-disc ml-6 space-y-1 mb-2">
-                <li>SOC2 Type II for security, availability, and confidentiality</li>
-                <li>ISO 27001 for information security management</li>
-                <li>GDPR, CCPA, and other applicable data protection regulations</li>
-              </ul>
+              <h2 className="text-xl font-semibold mb-3">7. Changes to These Terms</h2>
               <p>
-                We are committed to maintaining these standards through regular audits, assessments, and continuous improvement of our security practices.
+                We're constantly improving our Services, which means these Terms may change. If we make material changes, 
+                we'll notify you through the app or by email. Your continued use of our Services after such notification 
+                constitutes your acceptance of the updated Terms. If you don't agree with the changes, you must stop using 
+                our Services.
               </p>
             </section>
             
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">8. Modifications to Terms</h2>
+              <h2 className="text-xl font-semibold mb-3">8. Governing Law</h2>
               <p>
-                We reserve the right to modify these Terms of Service at any time. We will provide notice of significant changes through the application or by other means. Your continued use of Neuch after such modifications constitutes your acceptance of the updated terms.
+                These Terms are governed by the laws of California, without regard to its conflict of laws provisions. 
+                Any disputes arising under these Terms that can't be resolved amicably will be subject to binding arbitration 
+                in San Francisco, California, under the rules of the American Arbitration Association.
               </p>
             </section>
             
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">9. Governing Law</h2>
+              <h2 className="text-xl font-semibold mb-3">9. Get In Touch</h2>
               <p>
-                These Terms of Service shall be governed by and construed in accordance with the laws of the jurisdiction in which Neuch operates, without regard to its conflict of law principles.
-              </p>
-            </section>
-            
-            <Separator />
-            
-            <section>
-              <h2 className="text-xl font-semibold mb-3">10. Contact Information</h2>
-              <p>
-                If you have any questions about these Terms of Service, security concerns, or to report a potential vulnerability, please contact us at:
+                Questions about these Terms? We'd love to hear from you! Our team is always here to help with any questions 
+                or concerns. Please reach out to our legal team at:
                 <br />
-                <a href="mailto:terms@neuch.app" className="text-primary hover:underline">
-                  terms@neuch.app
+                <a href="mailto:legal@neuch.app" className="text-primary hover:underline">
+                  legal@neuch.app
                 </a>
               </p>
             </section>

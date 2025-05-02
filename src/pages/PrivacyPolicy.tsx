@@ -25,19 +25,19 @@ const PrivacyPolicy = () => {
             <span>Back</span>
           </Button>
           <h1 className="text-2xl font-semibold mb-2">Privacy Policy</h1>
-          <p className="text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
+          <p className="text-muted-foreground">Last updated: May 1, 2025</p>
           <Separator className="my-4" />
         </header>
         
         <ScrollArea className="h-[calc(100vh-220px)]">
           <div className="space-y-6 pr-4">
             <section>
-              <h2 className="text-xl font-semibold mb-3">Introduction</h2>
+              <h2 className="text-xl font-semibold mb-3">Our Privacy Commitment</h2>
               <p className="mb-2">
-                At Neuch, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application.
+                At Neuch, we believe your beauty journey should be personal, and so should your data. Your privacy isn't just a legal obligation for us—it's a core value.
               </p>
               <p>
-                We value the trust you place in us and recognize the importance of secure transactions and information privacy. We are committed to maintaining compliance with applicable data protection regulations, including GDPR, CCPA, and industry standards like SOC2 and ISO 27001.
+                Founded by a team of beauty enthusiasts and tech innovators who were frustrated by the lack of inclusive foundation matching tools, we built Neuch with privacy by design. Our founding team includes experts in both cosmetic science and cybersecurity, ensuring that your data is not only useful but also protected at every step.
               </p>
             </section>
             
@@ -45,16 +45,22 @@ const PrivacyPolicy = () => {
             
             <section>
               <h2 className="text-xl font-semibold mb-3">Information We Collect</h2>
-              <p className="mb-2">We collect information in the following ways:</p>
+              <p className="mb-2">Here's what we collect and why:</p>
               <ul className="list-disc ml-6 space-y-2">
                 <li>
-                  <strong>Information you provide to us:</strong> This includes account creation details, skin analysis photos, and any other information you directly provide.
+                  <strong>Account information:</strong> When you create an account, we collect your name and email. We use this to personalize your experience and communicate with you about your account.
                 </li>
                 <li>
-                  <strong>Camera permission:</strong> We request camera access to analyze your skin tone. These images are only stored locally on your device unless you explicitly save your results to your account.
+                  <strong>Skin analysis photos:</strong> These are the heart of our service. By default, these images stay local on your device. If you choose to save your analysis to your account, these photos are encrypted before transmission and storage.
                 </li>
                 <li>
-                  <strong>Device information:</strong> We collect device-specific information such as operating system version and device type to optimize your experience.
+                  <strong>Device information:</strong> We collect limited information about your device (like model and OS version) to optimize the camera functionality and ensure accurate skin tone analysis across different screens.
+                </li>
+                <li>
+                  <strong>Foundation preferences:</strong> When you favorite products or record purchases, we store these preferences to improve your recommendations and shopping experience.
+                </li>
+                <li>
+                  <strong>Usage analytics:</strong> We collect anonymous data about how you use our app to improve our features and user experience. This includes navigation patterns and feature engagement, but is never tied to your personal information.
                 </li>
               </ul>
             </section>
@@ -62,94 +68,120 @@ const PrivacyPolicy = () => {
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">How We Use Your Information</h2>
-              <p className="mb-2">We use the information we collect to:</p>
+              <h2 className="text-xl font-semibold mb-3">How Your Data Powers Neuch</h2>
+              <p className="mb-2">Your data helps us:</p>
               <ul className="list-disc ml-6 space-y-2">
-                <li>Provide, maintain, and improve our services</li>
-                <li>Process and analyze your skin tone to provide accurate recommendations</li>
-                <li>Communicate with you about your account, recommendations, and other notices</li>
-                <li>Protect against and prevent fraud, unauthorized transactions, and other illegal activities</li>
-                <li>Troubleshoot problems and improve the user experience</li>
-              </ul>
-            </section>
-            
-            <Separator />
-            
-            <section>
-              <h2 className="text-xl font-semibold mb-3">Data Security</h2>
-              <p className="mb-2">
-                We implement comprehensive security measures to maintain the safety of your personal information:
-              </p>
-              <ul className="list-disc ml-6 space-y-2">
-                <li>All user data is encrypted in transit using TLS 1.2+ and at rest using AES-256 encryption</li>
-                <li>Personal skin photos are stored locally on your device by default</li>
-                <li>If you choose to save analysis results to your account, data is encrypted and stored in compliance with SOC2 and ISO 27001 standards</li>
-                <li>We employ session timeout mechanisms and automatic logout for idle sessions</li>
-                <li>We implement role-based access controls for our internal systems</li>
-                <li>Regular security assessments, penetration tests, and vulnerability scans are conducted</li>
-                <li>We maintain a comprehensive incident response plan</li>
-              </ul>
-            </section>
-            
-            <Separator />
-            
-            <section>
-              <h2 className="text-xl font-semibold mb-3">Compliance and Certifications</h2>
-              <p className="mb-2">
-                Neuch is committed to maintaining the highest standards of data protection and privacy:
-              </p>
-              <ul className="list-disc ml-6 space-y-2">
-                <li>Our security practices align with SOC2 Type II requirements for security, availability, and confidentiality</li>
-                <li>We maintain compliance with ISO 27001 standards for information security management</li>
-                <li>Regular independent third-party audits verify our compliance with industry standards</li>
-                <li>We adhere to GDPR, CCPA, and other applicable data protection regulations</li>
-                <li>Our staff undergoes regular security awareness training</li>
-              </ul>
-            </section>
-            
-            <Separator />
-            
-            <section>
-              <h2 className="text-xl font-semibold mb-3">Your Rights Under GDPR, CCPA, and Other Regulations</h2>
-              <p className="mb-2">
-                Depending on your location, you may have certain rights regarding your personal information:
-              </p>
-              <ul className="list-disc ml-6 space-y-2">
-                <li>Right to access personal data we hold about you</li>
-                <li>Right to request correction of inaccurate information</li>
-                <li>Right to request deletion of your data (right to be forgotten)</li>
-                <li>Right to data portability</li>
-                <li>Right to withdraw consent at any time</li>
-                <li>Right to object to processing of your personal data</li>
-                <li>Right to lodge a complaint with a supervisory authority</li>
+                <li>Analyze your unique skin tone and provide accurate foundation matches</li>
+                <li>Create personalized recommendations based on your skin type, preferences, and past favorites</li>
+                <li>Improve our algorithms to better serve the diverse range of skin tones in our community</li>
+                <li>Send you relevant updates about new compatible products or features</li>
+                <li>Troubleshoot technical issues and enhance our user experience</li>
               </ul>
               <p className="mt-3">
-                To exercise any of these rights, please contact us using the details provided below.
+                We never use your personal data to create marketing profiles or sell to third parties. Unlike many beauty apps, we don't monetize your data—we monetize our premium features.
               </p>
             </section>
             
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">Data Retention</h2>
+              <h2 className="text-xl font-semibold mb-3">Our Security Approach</h2>
               <p className="mb-2">
-                We retain your personal information only for as long as necessary to fulfill the purposes for which we collected it, including for the purposes of satisfying any legal, regulatory, tax, accounting, or reporting requirements.
+                Our security infrastructure was built by engineers with backgrounds from companies like Apple and Palantir. We implement:
               </p>
-              <p>
-                You can request deletion of your account and personal information at any time by contacting us.
+              <ul className="list-disc ml-6 space-y-2">
+                <li><strong>End-to-end encryption:</strong> All sensitive data is encrypted both in transit and at rest using AES-256 encryption</li>
+                <li><strong>Local-first architecture:</strong> Your photos are processed on your device whenever possible</li>
+                <li><strong>Encrypted cloud backup:</strong> When you save to your account, data is secured with multiple layers of encryption</li>
+                <li><strong>Regular penetration testing:</strong> We conduct quarterly security audits with third-party experts</li>
+                <li><strong>Role-based access control:</strong> Even within our team, access to user data is strictly limited and audited</li>
+                <li><strong>Compliance certifications:</strong> Our infrastructure maintains SOC2 Type II and ISO 27001 compliance</li>
+              </ul>
+            </section>
+            
+            <Separator />
+            
+            <section>
+              <h2 className="text-xl font-semibold mb-3">Your Privacy Controls</h2>
+              <p className="mb-2">
+                We believe in giving you meaningful control over your data:
+              </p>
+              <ul className="list-disc ml-6 space-y-2">
+                <li><strong>Privacy-first default settings:</strong> We start with the most private options selected</li>
+                <li><strong>Local processing option:</strong> Choose to keep all analysis local on your device</li>
+                <li><strong>Selective sharing:</strong> Decide exactly which results you want to save to your account</li>
+                <li><strong>One-click data export:</strong> Download all your personal data anytime</li>
+                <li><strong>Simple deletion:</strong> Permanently remove any or all of your data from our servers</li>
+                <li><strong>Privacy dashboard:</strong> View and manage all your privacy settings in one place</li>
+              </ul>
+              <p className="mt-3">
+                To access these controls, visit the Privacy section in your app settings, or email our dedicated privacy team.
               </p>
             </section>
             
             <Separator />
             
             <section>
-              <h2 className="text-xl font-semibold mb-3">Contact Us</h2>
+              <h2 className="text-xl font-semibold mb-3">Your Rights Under GDPR, CCPA & Global Regulations</h2>
+              <p className="mb-2">
+                Regardless of where you live, we extend core privacy rights to all users:
+              </p>
+              <ul className="list-disc ml-6 space-y-2">
+                <li>The right to access all your personal data</li>
+                <li>The right to correct inaccurate information</li>
+                <li>The right to delete your data (we complete deletion requests within 7 days)</li>
+                <li>The right to data portability in standard formats</li>
+                <li>The right to object to certain data processing</li>
+                <li>The right to withdraw consent at any time</li>
+              </ul>
+              <p className="mt-3">
+                For European users, we serve as the data controller under GDPR. For California residents, we comply with all CCPA requirements including the right to opt-out of data sales (though we never sell your data anyway).
+              </p>
+            </section>
+            
+            <Separator />
+            
+            <section>
+              <h2 className="text-xl font-semibold mb-3">Data Storage & Retention</h2>
+              <p className="mb-2">
+                We store your data on secure AWS servers in the US and EU. We keep your personal information only as long as necessary to provide our services or to comply with our legal obligations.
+              </p>
+              <p className="mb-2">
+                For active accounts:
+              </p>
+              <ul className="list-disc ml-6 space-y-2">
+                <li>Account information is retained while your account is active</li>
+                <li>Skin analysis photos are kept for 90 days unless you specifically save them</li>
+                <li>Saved analyses and preferences are kept until you delete them</li>
+              </ul>
+              <p className="mt-3 mb-2">
+                For inactive accounts:
+              </p>
+              <ul className="list-disc ml-6 space-y-2">
+                <li>We send a reminder after 6 months of inactivity</li>
+                <li>After 12 months of inactivity, we anonymize your personal data</li>
+                <li>You can request complete deletion at any time</li>
+              </ul>
+            </section>
+            
+            <Separator />
+            
+            <section>
+              <h2 className="text-xl font-semibold mb-3">Contact Our Privacy Team</h2>
+              <p className="mb-2">
+                Our dedicated privacy team is led by our co-founder and Chief Privacy Officer, who oversees all data protection efforts. We aim to respond to all privacy inquiries within 24 hours.
+              </p>
               <p>
-                For questions about this Privacy Policy, to exercise your rights, or to report a security concern, please contact our Data Protection Officer at:
+                For questions, concerns, or to exercise your privacy rights:
                 <br />
                 <a href="mailto:privacy@neuch.app" className="text-primary hover:underline">
                   privacy@neuch.app
                 </a>
+              </p>
+              <p className="mt-3">
+                Neuch, Inc.<br />
+                548 Market Street<br />
+                San Francisco, CA 94104
               </p>
             </section>
           </div>
