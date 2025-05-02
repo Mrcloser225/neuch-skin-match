@@ -64,12 +64,16 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1618082693771-07b965357eab?q=80&w=1664&auto=format&fit=crop" 
+                    src="/capture-image.jpg" 
                     alt="Woman taking a selfie in good lighting"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to a reliable source if image fails to load
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618082693771-07b965357eab?q=80&w=1664&auto=format&fit=crop";
+                    }}
                   />
                 </motion.div>
               </div>
@@ -87,12 +91,16 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1605980776566-0486c3ac7cbd?q=80&w=1887&auto=format&fit=crop" 
+                    src="/analyze-image.jpg" 
                     alt="AI analyzing skin undertones"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to a reliable source if image fails to load
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?q=80&w=1887&auto=format&fit=crop";
+                    }}
                   />
                 </motion.div>
               </div>
@@ -110,12 +118,16 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=1480&auto=format&fit=crop" 
+                    src="/match-image.jpg" 
                     alt="Foundation products matched to skin tone"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to a reliable source if image fails to load
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=1480&auto=format&fit=crop";
+                    }}
                   />
                 </motion.div>
               </div>
@@ -133,12 +145,16 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center"
+                  className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1615357363567-0266aec2f945?q=80&w=1480&auto=format&fit=crop" 
+                    src="/save-image.jpg" 
                     alt="Woman saving her foundation matches"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to a reliable source if image fails to load
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1615357363567-0266aec2f945?q=80&w=1480&auto=format&fit=crop";
+                    }}
                   />
                 </motion.div>
               </div>
