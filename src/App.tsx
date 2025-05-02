@@ -33,17 +33,24 @@ const queryClient = new QueryClient({
 const App = () => {
   const [showingSplash, setShowingSplash] = useState(true);
   const [isCapacitor, setIsCapacitor] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
   
-  // Check if running in Capacitor environment
+  // Check if running in Capacitor environment and detect platform
   useEffect(() => {
     const checkPlatform = async () => {
       try {
-        // Simple check if window.Capacitor exists
+        // Check if window.Capacitor exists
         if (window.Capacitor) {
           setIsCapacitor(true);
+          // Check if running on iOS
+          if (window.Capacitor.getPlatform() === 'ios') {
+            setIsIOS(true);
+            // Add iOS-specific body classes for safe area handling
+            document.body.classList.add('ios-device');
+          }
         }
       } catch (e) {
-        console.log("Not running in Capacitor environment");
+        console.log("Not running in Capacitor environment", e);
       }
     };
     

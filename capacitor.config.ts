@@ -13,7 +13,8 @@ const config: CapacitorConfig = {
     contentInset: 'always',
     backgroundColor: "#FFF8F2",
     preferredContentMode: 'mobile',
-    scheme: 'neuch-skin-match'
+    scheme: 'neuch-skin-match',
+    limitsNavigationsToAppBoundDomains: true
   },
   plugins: {
     SplashScreen: {
