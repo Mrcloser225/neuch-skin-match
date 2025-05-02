@@ -67,8 +67,8 @@ const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
                   className="relative w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center shadow-lg"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=2940&auto=format&fit=crop"
-                    alt="Woman taking a selfie in good lighting" 
+                    src="https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?q=80&w=3087&auto=format&fit=crop"
+                    alt="Beautiful woman with flawless makeup" 
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
