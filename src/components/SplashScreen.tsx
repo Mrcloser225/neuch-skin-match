@@ -37,7 +37,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center"
       >
-        <Logo size="xl" />
+        <Logo size="lg" />
         <motion.p 
           className="mt-4 text-lg text-neuch-800 font-serif"
           initial={{ opacity: 0 }}
