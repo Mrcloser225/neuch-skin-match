@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   appName: 'neuch-skin-match',
   webDir: 'dist',
   server: {
-    url: 'https://b01b32cd-1b12-4164-b319-d9d5a4ca6546.lovableproject.com?forceHideBadge=true',
+    url: 'https://github.com/Mrcloser225/neuch-skin-match.git',
     cleartext: true
   },
   ios: {
