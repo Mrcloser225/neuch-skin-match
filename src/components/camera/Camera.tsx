@@ -1,3 +1,4 @@
+
 import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
@@ -38,11 +39,15 @@ const Camera = ({ onCapture, onClose }: CameraProps) => {
           }
         }
       });
+      
+      // Add iOS specific body class
+      document.body.classList.add('ios-capacitor');
     }
     
     return () => {
       if (isIOSCapacitor) {
         document.removeEventListener('visibilitychange', () => {});
+        document.body.classList.remove('ios-capacitor');
       }
     };
   }, [isIOSCapacitor]);
@@ -60,12 +65,14 @@ const Camera = ({ onCapture, onClose }: CameraProps) => {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black safe-area-inset-top safe-area-inset-bottom">
       <motion.button
-        className="absolute top-safe right-4 z-10 p-2 rounded-full bg-black/50 text-white"
+        className="absolute right-4 z-10 p-2 rounded-full bg-black/50 text-white"
         onClick={onClose}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        style={{ top: isIOSCapacitor ? 'env(safe-area-inset-top, 4rem)' : '1rem' }}
+        style={{ 
+          top: isIOSCapacitor ? 'max(env(safe-area-inset-top, 1rem), 1rem)' : '1rem'
+        }}
       >
         <X size={24} />
       </motion.button>
@@ -97,7 +104,9 @@ const Camera = ({ onCapture, onClose }: CameraProps) => {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, type: "spring", damping: 20 }}
-          style={{ paddingBottom: isIOSCapacitor ? 'calc(env(safe-area-inset-bottom, 1rem) + 1rem)' : '1rem' }}
+          style={{ 
+            paddingBottom: isIOSCapacitor ? 'max(env(safe-area-inset-bottom, 1rem), 2rem)' : '1rem' 
+          }}
         >
           <CameraInstructions />
           

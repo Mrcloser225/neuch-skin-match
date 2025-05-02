@@ -14,7 +14,8 @@ const config: CapacitorConfig = {
     backgroundColor: "#FFF8F2",
     preferredContentMode: 'mobile',
     scheme: 'neuch-skin-match',
-    limitsNavigationsToAppBoundDomains: true
+    limitsNavigationsToAppBoundDomains: true,
+    webViewAllowsBackForwardNavigationGestures: true
   },
   plugins: {
     SplashScreen: {
@@ -22,6 +23,11 @@ const config: CapacitorConfig = {
       backgroundColor: "#FFF8F2",
       splashFullScreen: true,
       splashImmersive: true
+    },
+    Keyboard: {
+      resize: 'body',
+      style: 'dark',
+      resizeOnFullScreen: true
     }
   }
 };
