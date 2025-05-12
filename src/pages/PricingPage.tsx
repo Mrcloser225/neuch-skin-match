@@ -22,6 +22,7 @@ interface PricingPlan {
   popular?: boolean;
   tier: "free" | "premium" | "lifetime";
   badge?: string;
+  stripePrice?: string; // Added Stripe price ID
 }
 
 const pricingPlans: PricingPlan[] = [
@@ -53,6 +54,7 @@ const pricingPlans: PricingPlan[] = [
     tier: "premium",
     popular: true,
     badge: "Most Popular",
+    stripePrice: "price_yearly_premium", // Replace with your actual Stripe price ID
     features: [
       { text: "Basic skin tone analysis", included: true },
       { text: "Limited foundation recommendations (2)", included: true },
@@ -74,6 +76,7 @@ const pricingPlans: PricingPlan[] = [
     description: "One-time payment for lifetime access",
     tier: "lifetime",
     badge: "Best Value",
+    stripePrice: "price_lifetime", // Replace with your actual Stripe price ID
     features: [
       { text: "Basic skin tone analysis", included: true },
       { text: "Limited foundation recommendations (2)", included: true },
@@ -97,7 +100,19 @@ const PricingPage = () => {
   const { isAuthenticated } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleSubscribe = (plan: PricingPlan) => {
+  const handleSubscribe = async (plan: PricingPlan) => {
+    // Free plan doesn't need payment processing
+    if (plan.tier === "free") {
+      setSubscriptionTier("free");
+      toast({
+        title: "Free plan activated",
+        description: "You are now using the free plan. Upgrade anytime to access premium features.",
+      });
+      navigate("/results");
+      return;
+    }
+    
+    // Require authentication for paid plans
     if (!isAuthenticated) {
       toast({
         title: "Authentication required",
@@ -108,17 +123,50 @@ const PricingPage = () => {
     }
 
     setIsProcessing(true);
-
-    // Simulate payment processing
-    setTimeout(() => {
-      setSubscriptionTier(plan.tier);
+    
+    try {
+      // For production, replace this with your actual Stripe checkout logic
+      // This is a placeholder for demonstration purposes
+      const createCheckoutSession = async () => {
+        // In production, this should be replaced with a call to your backend
+        // Example: const response = await fetch('/api/create-checkout-session', {...})
+        
+        // Simulate a backend response
+        return new Promise<{url: string}>((resolve) => {
+          setTimeout(() => {
+            // In production, this would be the actual Stripe checkout URL
+            const checkoutUrl = `https://checkout.stripe.com/pay/cs_test_${plan.id}`;
+            resolve({url: checkoutUrl});
+          }, 1000);
+        });
+      };
+      
+      // Get the checkout URL from your backend
+      const { url } = await createCheckoutSession();
+      
+      // Open Stripe checkout in a new tab
+      window.open(url, '_blank');
+      
+      // For demo purposes, we're setting the subscription anyway
+      // In production, this should only happen after successful payment confirmation
+      setTimeout(() => {
+        setSubscriptionTier(plan.tier);
+        setIsProcessing(false);
+        toast({
+          title: "Subscription activated",
+          description: `You are now subscribed to the ${plan.name} plan. Enjoy your premium features!`,
+        });
+      }, 3000);
+      
+    } catch (error) {
+      console.error("Payment processing error:", error);
       setIsProcessing(false);
       toast({
-        title: "Subscription activated",
-        description: `You are now subscribed to the ${plan.name} plan. Enjoy your premium features!`,
+        title: "Payment processing failed",
+        description: "There was a problem processing your payment. Please try again.",
+        variant: "destructive"
       });
-      navigate("/results");
-    }, 1500);
+    }
   };
 
   return (
