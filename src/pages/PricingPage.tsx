@@ -35,7 +35,7 @@ const pricingPlans: PricingPlan[] = [
     features: [
       { text: "Basic skin tone analysis", included: true },
       { text: "Limited foundation recommendations (2)", included: true },
-      { text: "Basic undertone detection", included: true },
+      { text: "Basic undertone detection", included: false }, // Changed to false
       { text: "Unlimited foundation recommendations", included: false },
       { text: "Premium brand suggestions", included: false },
       { text: "Personalized shade matching", included: false },
