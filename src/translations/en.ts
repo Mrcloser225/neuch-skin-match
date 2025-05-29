@@ -1,6 +1,54 @@
-
 const translations = {
-  // Home page
+  // Home page - Hero Section
+  "home.hero.title": "Find Your Perfect Foundation Match",
+  "home.hero.subtitle": "Revolutionary AI technology that analyzes your unique skin tone and recommends the ideal foundation shades from hundreds of brands.",
+  "home.hero.cta": "Start Your Analysis",
+  "home.hero.learn_more": "See how it works",
+
+  // Home page - How It Works
+  "home.how_it_works.title": "How Neuch Works",
+  "home.how_it_works.subtitle": "Get your perfect foundation match in 4 simple steps",
+  "home.how_it_works.step1.title": "Capture",
+  "home.how_it_works.step1.desc": "Take a clear selfie with natural lighting",
+  "home.how_it_works.step2.title": "Analyze",
+  "home.how_it_works.step2.desc": "AI analyzes your skin tone and undertone",
+  "home.how_it_works.step3.title": "Match",
+  "home.how_it_works.step3.desc": "Find perfect shades from hundreds of brands",
+  "home.how_it_works.step4.title": "Save",
+  "home.how_it_works.step4.desc": "Save your matches and track your favorites",
+
+  // Home page - Features
+  "home.features.title": "Why Choose Neuch?",
+  "home.features.subtitle": "The most advanced foundation matching technology designed for everyone",
+  "home.features.ai.title": "AI-Powered Precision",
+  "home.features.ai.desc": "Advanced algorithms analyze undertones with 95% accuracy across all skin types",
+  "home.features.inclusive.title": "Inclusive Technology",
+  "home.features.inclusive.desc": "Specially designed for cool, neutral, and olive undertones often overlooked by other apps",
+  "home.features.conditions.title": "Skin Condition Adaptive",
+  "home.features.conditions.desc": "Works with eczema, vitiligo, albinism, and hyperpigmentation conditions",
+  "home.features.brands.title": "Hundreds of Brands",
+  "home.features.brands.desc": "Compare matches across drugstore to luxury brands in one place",
+  "home.features.mobile.title": "Mobile Optimized",
+  "home.features.mobile.desc": "Perfect results whether you're at home or shopping in-store",
+  "home.features.community.title": "Community Driven",
+  "home.features.community.desc": "Join thousands of users finding their perfect foundation match",
+
+  // Home page - Future Vision
+  "home.future.title": "The Future of Beauty Shopping",
+  "home.future.subtitle": "Soon, discover and purchase your recommended foundation shades directly through our app. We're building the ultimate beauty marketplace where finding your perfect match leads to effortless shopping.",
+
+  // Home page - Download
+  "home.download.title": "Get the Neuch App",
+  "home.download.subtitle": "Download now and start finding your perfect foundation match",
+  "home.download.available_on": "Available on the",
+  "home.download.app_store": "App Store",
+  "home.download.get_it_on": "Get it on",
+  "home.download.google_play": "Google Play",
+
+  // Home page - Footer
+  "home.footer.copyright": "© 2024 Neuch. All rights reserved.",
+
+  // Legacy home page (keeping for backward compatibility)
   "home.title": "Find your perfect foundation match",
   "home.subtitle": "Neuch analyzes your skin's unique undertone to recommend the ideal foundation shades for your complexion.",
   "home.start_button": "Start Skin Analysis",

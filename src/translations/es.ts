@@ -1,6 +1,54 @@
-
 const translations = {
-  // Home page
+  // Home page - Hero Section
+  "home.hero.title": "Encuentra Tu Base de Maquillaje Perfecta",
+  "home.hero.subtitle": "Tecnología revolucionaria de IA que analiza tu tono de piel único y recomienda las tonalidades ideales de base de cientos de marcas.",
+  "home.hero.cta": "Comenzar Análisis",
+  "home.hero.learn_more": "Ver cómo funciona",
+
+  // Home page - How It Works
+  "home.how_it_works.title": "Cómo Funciona Neuch",
+  "home.how_it_works.subtitle": "Obtén tu combinación perfecta de base en 4 simples pasos",
+  "home.how_it_works.step1.title": "Capturar",
+  "home.how_it_works.step1.desc": "Toma una selfie clara con iluminación natural",
+  "home.how_it_works.step2.title": "Analizar",
+  "home.how_it_works.step2.desc": "La IA analiza tu tono de piel y subtono",
+  "home.how_it_works.step3.title": "Combinar",
+  "home.how_it_works.step3.desc": "Encuentra tonos perfectos de cientos de marcas",
+  "home.how_it_works.step4.title": "Guardar",
+  "home.how_it_works.step4.desc": "Guarda tus combinaciones y rastrea tus favoritas",
+
+  // Home page - Features
+  "home.features.title": "¿Por Qué Elegir Neuch?",
+  "home.features.subtitle": "La tecnología de combinación de base más avanzada diseñada para todos",
+  "home.features.ai.title": "Precisión Impulsada por IA",
+  "home.features.ai.desc": "Algoritmos avanzados analizan subtonos con 95% de precisión en todos los tipos de piel",
+  "home.features.inclusive.title": "Tecnología Inclusiva",
+  "home.features.inclusive.desc": "Especialmente diseñada para subtonos fríos, neutros y oliváceos a menudo pasados por alto",
+  "home.features.conditions.title": "Adaptable a Condiciones de Piel",
+  "home.features.conditions.desc": "Funciona con eczema, vitíligo, albinismo e hiperpigmentación",
+  "home.features.brands.title": "Cientos de Marcas",
+  "home.features.brands.desc": "Compara combinaciones desde farmacia hasta marcas de lujo en un lugar",
+  "home.features.mobile.title": "Optimizado para Móvil",
+  "home.features.mobile.desc": "Resultados perfectos ya sea en casa o comprando en tienda",
+  "home.features.community.title": "Impulsado por la Comunidad",
+  "home.features.community.desc": "Únete a miles de usuarios encontrando su combinación perfecta",
+
+  // Home page - Future Vision
+  "home.future.title": "El Futuro de las Compras de Belleza",
+  "home.future.subtitle": "Pronto, descubre y compra tus tonos de base recomendados directamente a través de nuestra aplicación. Estamos construyendo el mercado de belleza definitivo donde encontrar tu combinación perfecta lleva a compras sin esfuerzo.",
+
+  // Home page - Download
+  "home.download.title": "Obtén la App Neuch",
+  "home.download.subtitle": "Descarga ahora y comienza a encontrar tu combinación perfecta de base",
+  "home.download.available_on": "Disponible en",
+  "home.download.app_store": "App Store",
+  "home.download.get_it_on": "Consíguelo en",
+  "home.download.google_play": "Google Play",
+
+  // Home page - Footer
+  "home.footer.copyright": "© 2024 Neuch. Todos los derechos reservados.",
+
+  // Legacy home page content (keeping for backward compatibility)
   "home.title": "Encuentra tu base de maquillaje perfecta",
   "home.subtitle": "Neuch analiza el subtono único de tu piel para recomendar las tonalidades de base ideales para tu complexión.",
   "home.start_button": "Iniciar análisis de piel",
