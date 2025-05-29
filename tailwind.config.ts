@@ -157,6 +157,8 @@ export default {
 					'Arial',
 					'sans-serif'
 				],
+				lexend: ['Lexend', 'sans-serif'],
+				'noto-sans': ['"Noto Sans"', 'sans-serif'],
 			},
 			transitionProperty: {
 				'height': 'height',
