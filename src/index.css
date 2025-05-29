@@ -43,7 +43,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-instagram;
+    @apply bg-white text-foreground font-lexend;
     font-feature-settings: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -117,19 +117,19 @@
     @apply bg-neuch-300 rounded-full;
   }
 
-  /* Instagram-like typography styles */
+  /* Modern typography styles using Lexend */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-instagram font-semibold;
+    @apply font-lexend font-semibold;
     letter-spacing: -0.01em;
   }
 
   p, span, div, button, input, textarea {
-    @apply font-instagram;
+    @apply font-lexend;
     letter-spacing: 0;
   }
 
   .neuch {
-    @apply font-instagram;
+    @apply font-lexend;
     letter-spacing: -0.02em;
   }
 }
