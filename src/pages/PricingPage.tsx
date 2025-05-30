@@ -1,3 +1,4 @@
+
 import { CheckIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +18,7 @@ interface PricingPlan {
   name: string;
   price: number;
   description: string;
-  features: Array<{text: string; included: boolean}>;
+  features: Array<{text: string; included: boolean; premium?: boolean}>;
   popular?: boolean;
   tier: "free" | "premium";
   badge?: string;
@@ -30,70 +31,73 @@ const pricingPlans: PricingPlan[] = [
     id: "free",
     name: "Free",
     price: 0,
-    description: "One scan & limited recommendations",
+    description: "Limited access with basic features",
     tier: "free",
     billingCycleText: "",
     features: [
       { text: "Basic skin tone analysis", included: true },
-      { text: "One skin scan", included: true },
+      { text: "One skin scan only", included: true },
       { text: "Limited foundation recommendations (2)", included: true },
       { text: "Basic undertone detection", included: false },
-      { text: "Unlimited foundation recommendations", included: false },
-      { text: "Premium brand suggestions", included: false },
-      { text: "Personalized shade matching", included: false },
-      { text: "Save and compare results", included: false },
-      { text: "Shopping links to recommended products", included: false },
-      { text: "Priority customer support", included: false },
-      { text: "Early access to new features", included: false },
-      { text: "Exclusive beauty content and tutorials", included: false }
+      { text: "Unlimited skin scans", included: false, premium: true },
+      { text: "Unlimited foundation recommendations", included: false, premium: true },
+      { text: "Premium brand suggestions", included: false, premium: true },
+      { text: "Personalized shade matching", included: false, premium: true },
+      { text: "Save and compare results", included: false, premium: true },
+      { text: "Shopping links to recommended products", included: false, premium: true },
+      { text: "Input existing products for better recommendations", included: false, premium: true },
+      { text: "AI-powered product suggestions", included: false, premium: true },
+      { text: "Priority customer support", included: false, premium: true }
     ]
   },
   {
     id: "premium-monthly",
     name: "Premium Monthly",
     price: 9.99,
-    description: "Full access, billed monthly",
+    description: "Full access to all features, billed monthly",
     tier: "premium",
-    stripePrice: "price_YOUR_MONTHLY_PREMIUM_ID", // Replace with your actual Stripe price ID
+    stripePrice: "price_YOUR_MONTHLY_PREMIUM_ID",
     billingCycleText: "/month",
     features: [
       { text: "Basic skin tone analysis", included: true },
-      { text: "One skin scan", included: true }, // Free users get one scan, premium users get this implicitly + more
-      { text: "Limited foundation recommendations (2)", included: false }, // Premium gets unlimited
+      { text: "One skin scan only", included: false },
+      { text: "Limited foundation recommendations (2)", included: false },
       { text: "Basic undertone detection", included: true },
-      { text: "Unlimited foundation recommendations", included: true },
-      { text: "Premium brand suggestions", included: true },
-      { text: "Personalized shade matching", included: true },
-      { text: "Save and compare results", included: true },
-      { text: "Shopping links to recommended products", included: true },
-      { text: "Priority customer support", included: false },
-      { text: "Early access to new features", included: false },
-      { text: "Exclusive beauty content and tutorials", included: false }
+      { text: "Unlimited skin scans", included: true, premium: true },
+      { text: "Unlimited foundation recommendations", included: true, premium: true },
+      { text: "Premium brand suggestions", included: true, premium: true },
+      { text: "Personalized shade matching", included: true, premium: true },
+      { text: "Save and compare results", included: true, premium: true },
+      { text: "Shopping links to recommended products", included: true, premium: true },
+      { text: "Input existing products for better recommendations", included: true, premium: true },
+      { text: "AI-powered product suggestions", included: true, premium: true },
+      { text: "Priority customer support", included: true, premium: true }
     ]
   },
   {
     id: "premium-yearly",
     name: "Premium Yearly",
     price: 49.99,
-    description: "Full access, best value, billed yearly",
+    description: "Full access to all features, best value, billed yearly",
     tier: "premium",
     popular: true,
     badge: "Best Value",
-    stripePrice: "price_YOUR_YEARLY_PREMIUM_ID", // Replace with your actual Stripe price ID
+    stripePrice: "price_YOUR_YEARLY_PREMIUM_ID",
     billingCycleText: "/year",
     features: [
       { text: "Basic skin tone analysis", included: true },
-      { text: "One skin scan", included: true }, // Free users get one scan, premium users get this implicitly + more
-      { text: "Limited foundation recommendations (2)", included: false }, // Premium gets unlimited
+      { text: "One skin scan only", included: false },
+      { text: "Limited foundation recommendations (2)", included: false },
       { text: "Basic undertone detection", included: true },
-      { text: "Unlimited foundation recommendations", included: true },
-      { text: "Premium brand suggestions", included: true },
-      { text: "Personalized shade matching", included: true },
-      { text: "Save and compare results", included: true },
-      { text: "Shopping links to recommended products", included: true },
-      { text: "Priority customer support", included: false },
-      { text: "Early access to new features", included: false },
-      { text: "Exclusive beauty content and tutorials", included: false }
+      { text: "Unlimited skin scans", included: true, premium: true },
+      { text: "Unlimited foundation recommendations", included: true, premium: true },
+      { text: "Premium brand suggestions", included: true, premium: true },
+      { text: "Personalized shade matching", included: true, premium: true },
+      { text: "Save and compare results", included: true, premium: true },
+      { text: "Shopping links to recommended products", included: true, premium: true },
+      { text: "Input existing products for better recommendations", included: true, premium: true },
+      { text: "AI-powered product suggestions", included: true, premium: true },
+      { text: "Priority customer support", included: true, premium: true }
     ]
   }
 ];
@@ -106,7 +110,6 @@ const PricingPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSubscribe = async (plan: PricingPlan) => {
-    // Free plan doesn't need payment processing
     if (plan.tier === "free") {
       setSubscriptionTier("free");
       toast({
@@ -117,7 +120,6 @@ const PricingPage = () => {
       return;
     }
     
-    // Require authentication for paid plans
     if (!isAuthenticated) {
       toast({
         title: "Authentication required",
@@ -140,38 +142,24 @@ const PricingPage = () => {
     setIsProcessing(true);
     
     try {
-      // For production, replace this with your actual Stripe checkout logic
-      // This is a placeholder for demonstration purposes
       const createCheckoutSession = async () => {
-        // In production, this should be replaced with a call to your backend
-        // Example: const response = await fetch('/api/create-checkout-session', {...})
-        // For now, simulating with placeholder Stripe Price ID
         console.log("Creating checkout session for Stripe Price ID:", plan.stripePrice);
-        
-        // Simulate a backend response
         return new Promise<{url: string}>((resolve) => {
           setTimeout(() => {
-            // In production, this would be the actual Stripe checkout URL
-            // The plan.id is just a local identifier, Stripe needs its own Price ID.
-            const checkoutUrl = `https://checkout.stripe.com/pay/cs_test_YOUR_SESSION_ID_FOR_${plan.id}`; // This is a dummy URL
+            const checkoutUrl = `https://checkout.stripe.com/pay/cs_test_YOUR_SESSION_ID_FOR_${plan.id}`;
             resolve({url: checkoutUrl});
           }, 1000);
         });
       };
       
-      // Get the checkout URL from your backend
       const { url } = await createCheckoutSession();
-      
-      // Open Stripe checkout in a new tab
       window.open(url, '_blank');
       
-      // For demo purposes, we're setting the subscription anyway
-      // In production, this should only happen after successful payment confirmation via webhooks or success page logic
       setTimeout(() => {
-        setSubscriptionTier(plan.tier); // This will be 'premium' for both monthly and yearly
+        setSubscriptionTier(plan.tier);
         setIsProcessing(false);
         toast({
-          title: "Subscription processing", // Changed title
+          title: "Subscription processing",
           description: `Your subscription to ${plan.name} is being processed. Please check your Stripe dashboard for confirmation.`,
         });
       }, 3000);
@@ -189,8 +177,8 @@ const PricingPage = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex flex-col">
-        <header className="p-6 flex items-center">
+      <div className="min-h-screen flex flex-col bg-white">
+        <header className="p-6 flex items-center border-b border-gray-100">
           <BackButton to="/results" />
           <Logo className="mx-auto" />
         </header>
@@ -198,9 +186,9 @@ const PricingPage = () => {
         <main className="flex-1 p-6">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-serif font-medium mb-2">Choose Your Plan</h1>
-              <p className="text-neuch-700">
-                Get access to premium features and unlock the full potential of your beauty journey
+              <h1 className="text-3xl font-bold mb-2 text-gray-900">Choose Your Plan</h1>
+              <p className="text-gray-600">
+                Get access to premium features and unlock unlimited foundation matching
               </p>
             </div>
 
@@ -208,43 +196,44 @@ const PricingPage = () => {
               {pricingPlans.map((plan) => (
                 <Card 
                   key={plan.id} 
-                  className={`relative flex flex-col ${plan.popular ? 'border-amber-300 shadow-lg' : ''}`}
+                  className={`relative flex flex-col ${plan.popular ? 'border-2 border-black shadow-lg' : 'border border-gray-200'}`}
                 >
                   {plan.badge && (
-                    <div className="absolute -top-3 left-0 right-0 mx-auto w-fit bg-amber-400 text-white px-3 py-1 rounded-full text-xs font-medium">
+                    <div className="absolute -top-3 left-0 right-0 mx-auto w-fit bg-black text-white px-3 py-1 rounded-full text-xs font-medium">
                       {plan.badge}
                     </div>
                   )}
                   <CardHeader>
-                    <CardTitle>{plan.name}</CardTitle>
-                    <CardDescription>{plan.description}</CardDescription>
+                    <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>
+                    <CardDescription className="text-gray-600">{plan.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-grow">
-                    <div className="mb-4">
-                      <span className="text-3xl font-bold">${plan.price}</span>
-                      {plan.billingCycleText && <span className="text-sm text-neuch-600">{plan.billingCycleText}</span>}
+                    <div className="mb-6">
+                      <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
+                      {plan.billingCycleText && <span className="text-gray-600">{plan.billingCycleText}</span>}
                     </div>
-                    <ul className="space-y-2">
+                    <ul className="space-y-3">
                       {plan.features.map((feature, index) => (
-                        <li key={index} className="flex items-start gap-2">
+                        <li key={index} className="flex items-start gap-3">
                           {feature.included ? (
-                            <CheckIcon size={18} className="text-green-500 mt-0.5 flex-shrink-0" />
+                            <CheckIcon size={18} className="text-green-600 mt-0.5 flex-shrink-0" />
                           ) : (
                             <XIcon size={18} className="text-gray-300 mt-0.5 flex-shrink-0" />
                           )}
-                          <span className={`text-sm ${!feature.included ? 'text-gray-400' : ''}`}>{feature.text}</span>
+                          <span className={`text-sm ${!feature.included ? 'text-gray-400' : feature.premium ? 'font-bold text-gray-900' : 'text-gray-700'}`}>
+                            {feature.text}
+                          </span>
                         </li>
                       ))}
                     </ul>
                   </CardContent>
                   <CardFooter>
                     <Button 
-                      className={`w-full ${plan.tier === "free" ? "bg-neuch-200 hover:bg-neuch-300 text-neuch-800" : ""}`}
+                      className={`w-full ${plan.tier === "free" ? "bg-gray-200 hover:bg-gray-300 text-gray-800" : "bg-black hover:bg-gray-800 text-white"}`}
                       onClick={() => handleSubscribe(plan)}
-                      disabled={isProcessing || (subscriptionTier === plan.tier && plan.tier !== 'free') || (subscriptionTier === 'free' && plan.tier === 'free' && subscriptionTier === plan.id )} // More nuanced disabled logic might be needed if distinguishing between monthly/yearly active plans
+                      disabled={isProcessing || (subscriptionTier === plan.tier && plan.tier !== 'free')}
                     >
-                      {/* Simplified button text logic, assuming 'subscriptionTier' will be 'premium' for any paid plan */}
-                      {subscriptionTier === plan.tier && plan.tier !== 'free' ? "Current Tier" : 
+                      {subscriptionTier === plan.tier && plan.tier !== 'free' ? "Current Plan" : 
                        subscriptionTier === 'free' && plan.tier === 'free' ? "Current Plan" :
                         plan.tier === "free" ? "Select Free Plan" : `Get ${plan.name}`}
                     </Button>

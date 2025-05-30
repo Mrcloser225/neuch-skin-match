@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -19,6 +18,7 @@ import PricingPage from "./pages/PricingPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
+import ShopPage from "./pages/ShopPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +83,7 @@ const App = () => {
                       <Route path="/analysis" element={<AnalysisPage />} />
                       <Route path="/results" element={<ResultsPage />} />
                       <Route path="/pricing" element={<PricingPage />} />
+                      <Route path="/shop" element={<ShopPage />} />
                       <Route path="/privacy" element={<PrivacyPolicy />} />
                       <Route path="/terms" element={<TermsOfService />} />
                       <Route path="*" element={<NotFound />} />
