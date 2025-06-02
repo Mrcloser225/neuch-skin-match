@@ -53,8 +53,8 @@ export const getAIRecommendations = async (
 
 export const getTrendingProducts = async (): Promise<any> => {
   try {
-    // Use raw SQL query to access the new table until types are updated
-    const { data, error } = await supabase.rpc('get_latest_discovery');
+    // Use the edge function to get the latest discovery data
+    const { data, error } = await supabase.functions.invoke('get-latest-discovery');
 
     if (error) {
       console.error('Error fetching trending products:', error);
