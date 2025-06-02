@@ -1,3 +1,4 @@
+
 import { CheckIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -103,7 +104,7 @@ const PricingPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { subscriptionTier, setSubscriptionTier } = useSkin();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSubscribe = async (plan: PricingPlan) => {
@@ -118,7 +119,7 @@ const PricingPage = () => {
     }
     
     // For premium plans, check authentication first
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       toast({
         title: "Sign in required",
         description: "Please sign in to subscribe to a premium plan",
@@ -131,26 +132,69 @@ const PricingPage = () => {
     
     try {
       console.log("Creating checkout session for plan:", plan.id);
+      console.log("User authenticated:", isAuthenticated);
+      console.log("User ID:", user?.id);
       
+      // Get the current session to ensure we have a valid token
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        throw new Error("Authentication session error");
+      }
+      
+      if (!session) {
+        console.error("No active session found");
+        throw new Error("No active authentication session");
+      }
+
+      console.log("Session token present:", !!session.access_token);
+
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { planId: plan.id }
+        body: { 
+          planId: plan.id,
+          userId: user.id 
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
 
-      if (error) throw error;
+      console.log("Supabase function response:", { data, error });
 
-      // Open Stripe checkout in a new tab
-      window.open(data.url, '_blank');
-      
-      toast({
-        title: "Redirecting to checkout",
-        description: "Opening Stripe checkout in a new tab...",
-      });
+      if (error) {
+        console.error("Supabase function error:", error);
+        throw error;
+      }
+
+      if (!data?.url) {
+        console.error("No checkout URL returned:", data);
+        throw new Error("No checkout URL received from payment processor");
+      }
+
+      console.log("Redirecting to checkout URL:", data.url);
+
+      // Redirect to Stripe checkout
+      window.location.href = data.url;
       
     } catch (error) {
       console.error("Payment processing error:", error);
+      
+      let errorMessage = "There was a problem processing your payment. Please try again.";
+      
+      if (error instanceof Error) {
+        if (error.message.includes("Authentication")) {
+          errorMessage = "Authentication error. Please sign out and sign in again.";
+        } else if (error.message.includes("network")) {
+          errorMessage = "Network error. Please check your connection and try again.";
+        } else if (error.message.includes("checkout")) {
+          errorMessage = "Checkout initialization failed. Please try again.";
+        }
+      }
+      
       toast({
         title: "Payment processing failed",
-        description: "There was a problem processing your payment. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
