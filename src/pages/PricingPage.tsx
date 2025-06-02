@@ -120,12 +120,13 @@ const PricingPage = () => {
       return;
     }
     
+    // For premium plans, check authentication first
     if (!isAuthenticated) {
       toast({
-        title: "Authentication required",
+        title: "Sign in required",
         description: "Please sign in to subscribe to a premium plan",
-        variant: "destructive"
       });
+      navigate("/auth");
       return;
     }
 
@@ -135,7 +136,6 @@ const PricingPage = () => {
         description: "This plan is not yet configured for payments. Please contact support or replace placeholder Stripe Price ID.",
         variant: "destructive",
       });
-      setIsProcessing(false);
       return;
     }
 
@@ -190,6 +190,13 @@ const PricingPage = () => {
               <p className="text-gray-600">
                 Get access to premium features and unlock unlimited foundation matching
               </p>
+              {!isAuthenticated && (
+                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-blue-800 text-sm">
+                    💡 <strong>Sign in required:</strong> Create an account to subscribe to premium plans and sync your data across devices.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
@@ -235,7 +242,8 @@ const PricingPage = () => {
                     >
                       {subscriptionTier === plan.tier && plan.tier !== 'free' ? "Current Plan" : 
                        subscriptionTier === 'free' && plan.tier === 'free' ? "Current Plan" :
-                        plan.tier === "free" ? "Select Free Plan" : `Get ${plan.name}`}
+                        plan.tier === "free" ? "Select Free Plan" : 
+                        !isAuthenticated ? "Sign In to Subscribe" : `Get ${plan.name}`}
                     </Button>
                   </CardFooter>
                 </Card>
