@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -37,6 +36,8 @@ import { useSkin } from "@/contexts/SkinContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getRecommendations, Foundation } from "@/data/foundations";
 import { getPremiumRecommendations, PremiumRecommendation, getShoppingUrl } from "@/services/premiumRecommendations";
+import { getAIRecommendations, AIRecommendation } from "@/services/aiRecommendations";
+import AIRecommendationCard from "@/components/AIRecommendationCard";
 
 const ResultsPage = () => {
   const navigate = useNavigate();
@@ -50,6 +51,9 @@ const ResultsPage = () => {
   const [showComparison, setShowComparison] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
+  const [aiRecommendations, setAiRecommendations] = useState<AIRecommendation[]>([]);
+  const [showAIRecommendations, setShowAIRecommendations] = useState(false);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   useEffect(() => {
     // Check URL params for success from Stripe payment
@@ -161,6 +165,77 @@ const ResultsPage = () => {
     window.open(url, '_blank');
   };
 
+  const loadAIRecommendations = async () => {
+    if (!isPremium) {
+      toast({
+        title: "Premium feature",
+        description: "AI-powered comprehensive recommendations are a premium feature.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoadingAI(true);
+    try {
+      const aiRecs = await getAIRecommendations(skinTone!, undertone!);
+      setAiRecommendations(aiRecs);
+      setShowAIRecommendations(true);
+      toast({
+        title: "AI recommendations loaded!",
+        description: `Found ${aiRecs.length} personalized recommendations from our comprehensive database.`,
+      });
+    } catch (error) {
+      console.error('Error loading AI recommendations:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load AI recommendations. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingAI(false);
+    }
+  };
+
+  const handleSaveAIRecommendation = (recommendation: AIRecommendation) => {
+    if (!isPremium) {
+      toast({
+        title: "Premium feature",
+        description: "Saving foundations is a premium feature.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const isAlreadySaved = savedFoundations.some(
+      saved => saved.brand === recommendation.brand && saved.shade === recommendation.shade
+    );
+
+    if (isAlreadySaved) {
+      toast({
+        title: "Already saved",
+        description: "This foundation is already in your saved list.",
+      });
+      return;
+    }
+
+    addSavedFoundation({
+      brand: recommendation.brand,
+      shade: recommendation.shade
+    });
+
+    toast({
+      title: "AI recommendation saved!",
+      description: `${recommendation.brand} - ${recommendation.shade} has been saved to your collection.`,
+    });
+  };
+
+  const handleShopAIRecommendation = (recommendation: AIRecommendation) => {
+    // For AI recommendations, we'll do a general search since we don't have direct URLs
+    const searchQuery = `${recommendation.brand} ${recommendation.productName} ${recommendation.shade}`;
+    const url = `https://www.sephora.com/search?keyword=${encodeURIComponent(searchQuery)}`;
+    window.open(url, '_blank');
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-neuch-50 to-neuch-100">
@@ -238,6 +313,76 @@ const ResultsPage = () => {
               </div>
             </div>
 
+            {/* AI-Powered Comprehensive Recommendations */}
+            {isPremium && (
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                      <Sparkles className="text-white" size={16} />
+                    </div>
+                    <h2 className="text-xl font-bold text-neuch-900">
+                      AI-Powered Comprehensive Recommendations
+                      <Badge variant="outline" className="ml-2 text-xs border-purple-500 text-purple-700">
+                        PREMIUM AI
+                      </Badge>
+                    </h2>
+                  </div>
+                  
+                  <Button
+                    onClick={loadAIRecommendations}
+                    disabled={isLoadingAI}
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
+                  >
+                    {isLoadingAI ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Analyzing...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={14} className="mr-1" />
+                        Get AI Recommendations
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {!showAIRecommendations && !isLoadingAI && (
+                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 mb-6 border border-purple-200">
+                    <div className="text-center">
+                      <Sparkles className="mx-auto mb-3 text-purple-500" size={32} />
+                      <h3 className="font-medium text-neuch-900 mb-2">Discover Hidden Gems</h3>
+                      <p className="text-sm text-neuch-700 mb-4">
+                        Our AI analyzes the entire makeup market to find perfect matches beyond household names. 
+                        Get personalized recommendations from niche, indie, K-beauty, and emerging brands.
+                      </p>
+                      <div className="grid grid-cols-2 gap-2 text-xs text-neuch-600">
+                        <div>• 500+ brands analyzed</div>
+                        <div>• Ingredient compatibility</div>
+                        <div>• Ethical & clean options</div>
+                        <div>• All price points</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {showAIRecommendations && aiRecommendations.length > 0 && (
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
+                    {aiRecommendations.map((rec, index) => (
+                      <AIRecommendationCard
+                        key={`${rec.brand}-${rec.shade}-${index}`}
+                        recommendation={rec}
+                        isPremium={isPremium}
+                        onSave={() => handleSaveAIRecommendation(rec)}
+                        onShop={() => handleShopAIRecommendation(rec)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Foundation Recommendations */}
             <div>
               <div className="flex items-center justify-between mb-6">
@@ -246,7 +391,7 @@ const ResultsPage = () => {
                     <Palette className="text-white" size={16} />
                   </div>
                   <h2 className="text-xl font-bold text-neuch-900">
-                    Foundation Recommendations
+                    Standard Recommendations
                     {isPremium && (
                       <Badge variant="outline" className="ml-2 text-xs border-amber-500 text-amber-700">
                         {subscriptionTier === 'lifetime' ? 'LIFETIME' : 'PREMIUM'}
