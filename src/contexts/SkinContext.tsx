@@ -1,5 +1,4 @@
-
-import { createContext, useState, useContext, ReactNode } from "react";
+import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 
 // Define skin conditions type
 type SkinCondition = "normal" | "eczema" | "vitiligo" | "albinism" | "hyperpigmentation" | null;
@@ -59,6 +58,27 @@ export const SkinProvider = ({ children }: { children: ReactNode }) => {
     savedFoundations: [],
   });
   const [savedFoundations, setSavedFoundations] = useState<SavedFoundation[]>([]);
+
+  // Persist skin data to localStorage when it changes
+  useEffect(() => {
+    if (skinTone && undertone) {
+      localStorage.setItem('skin_analysis_data', JSON.stringify({ skinTone, undertone }));
+    }
+  }, [skinTone, undertone]);
+
+  // Load skin data from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('skin_analysis_data');
+    if (savedData && !skinTone && !undertone) {
+      try {
+        const { skinTone: savedSkinTone, undertone: savedUndertone } = JSON.parse(savedData);
+        setSkinTone(savedSkinTone);
+        setUndertone(savedUndertone);
+      } catch (error) {
+        console.error("Error loading saved skin data:", error);
+      }
+    }
+  }, []);
 
   // Custom setter for userProfile that handles the optional savedFoundations
   const setUserProfile = (profile: {

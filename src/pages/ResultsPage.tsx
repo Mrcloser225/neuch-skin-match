@@ -42,8 +42,8 @@ const ResultsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { skinTone, undertone, subscriptionTier } = useSkin();
-  const { isAuthenticated, user, profile } = useAuth();
+  const { skinTone, undertone, subscriptionTier, setSkinTone, setUndertone } = useSkin();
+  const { isAuthenticated, user, profile, checkSubscription } = useAuth();
 
   const [recommendations, setRecommendations] = useState<PremiumRecommendation[]>([]);
   const [selectedFoundation, setSelectedFoundation] = useState<Foundation | null>(null);
@@ -52,7 +52,35 @@ const ResultsPage = () => {
   const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
-    // Check if we have skin data, if not redirect to camera page instead of showing error
+    // Check URL params for success from Stripe payment
+    const urlParams = new URLSearchParams(location.search);
+    const paymentSuccess = urlParams.get('success');
+    
+    if (paymentSuccess === 'true') {
+      // Payment was successful, refresh subscription status
+      checkSubscription();
+      toast({
+        title: "Payment successful!",
+        description: "Welcome to premium! You now have access to all premium features.",
+      });
+    }
+
+    // Try to restore skin data from localStorage if missing (after payment flow)
+    if (!skinTone || !undertone) {
+      const tempData = localStorage.getItem('temp_skin_data');
+      if (tempData) {
+        try {
+          const { skinTone: tempSkinTone, undertone: tempUndertone } = JSON.parse(tempData);
+          setSkinTone(tempSkinTone);
+          setUndertone(tempUndertone);
+          localStorage.removeItem('temp_skin_data');
+        } catch (error) {
+          console.error("Error parsing temporary skin data:", error);
+        }
+      }
+    }
+
+    // If we still don't have skin data after trying to restore, redirect to camera
     if (!skinTone || !undertone) {
       console.log("Missing skin data, redirecting to camera page");
       navigate("/camera");
@@ -66,7 +94,7 @@ const ResultsPage = () => {
     const recs = getPremiumRecommendations(undertone, skinTone, premiumStatus);
     setRecommendations(recs);
     setIsLoading(false);
-  }, [skinTone, undertone, subscriptionTier, navigate]);
+  }, [skinTone, undertone, subscriptionTier, navigate, location.search, checkSubscription, setSkinTone, setUndertone]);
 
   // Show loading while checking for skin data
   if (!skinTone || !undertone) {
@@ -80,7 +108,7 @@ const ResultsPage = () => {
           <main className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-              <p className="text-neuch-600">Redirecting to skin analysis...</p>
+              <p className="text-neuch-600">Loading your skin analysis...</p>
             </div>
           </main>
         </div>
@@ -118,7 +146,7 @@ const ResultsPage = () => {
 
         <main className="flex-1 p-6">
           <div className="max-w-4xl mx-auto space-y-8">
-            {/* Premium Welcome Banner */}
+            {/* Premium Welcome Banner - Show for new premium users */}
             {isPremium && (
               <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg p-4 border border-amber-200">
                 <div className="flex items-center justify-between">

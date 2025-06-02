@@ -103,7 +103,7 @@ const PricingPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { subscriptionTier, setSubscriptionTier, skinTone, undertone } = useSkin();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, checkSubscription } = useAuth();
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
   const handleSubscribe = async (plan: PricingPlan) => {
@@ -114,7 +114,7 @@ const PricingPage = () => {
         description: "You are now using the free plan. Upgrade anytime to access premium features.",
       });
       
-      // Check if user has completed skin analysis before redirecting to results
+      // For free plan, check if user has skin data and redirect accordingly
       if (skinTone && undertone) {
         navigate("/results");
       } else {
@@ -183,7 +183,48 @@ const PricingPage = () => {
         description: "Opening Stripe checkout in a new tab...",
       });
 
+      // Store current skin data before payment to preserve it
+      if (skinTone && undertone) {
+        localStorage.setItem('temp_skin_data', JSON.stringify({ skinTone, undertone }));
+      }
+
       window.open(data.url, '_blank');
+      
+      // Set up a listener for when the user returns from Stripe
+      const handleVisibilityChange = async () => {
+        if (!document.hidden) {
+          // User returned to the app, check subscription status
+          setTimeout(async () => {
+            try {
+              await checkSubscription();
+              
+              // Restore skin data if it was temporarily stored
+              const tempData = localStorage.getItem('temp_skin_data');
+              if (tempData) {
+                const { skinTone: tempSkinTone, undertone: tempUndertone } = JSON.parse(tempData);
+                // The skin context should already have this data, but just in case
+                localStorage.removeItem('temp_skin_data');
+              }
+              
+              // Navigate to appropriate page based on whether user has skin data
+              if (skinTone && undertone) {
+                navigate("/results");
+              } else {
+                navigate("/premium-dashboard");
+              }
+            } catch (error) {
+              console.error("Error checking subscription after payment:", error);
+            }
+          }, 2000); // Give some time for the payment to process
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      
+      // Clean up listener after 5 minutes
+      setTimeout(() => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      }, 5 * 60 * 1000);
       
     } catch (error) {
       console.error("Payment processing error:", error);
