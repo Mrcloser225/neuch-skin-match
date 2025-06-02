@@ -36,13 +36,13 @@ import Logo from "@/components/Logo";
 import { useSkin } from "@/contexts/SkinContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getRecommendations, Foundation } from "@/data/foundations";
-import { getPremiumRecommendations, PremiumRecommendation } from "@/services/premiumRecommendations";
+import { getPremiumRecommendations, PremiumRecommendation, getShoppingUrl } from "@/services/premiumRecommendations";
 
 const ResultsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { skinTone, undertone, subscriptionTier, setSkinTone, setUndertone } = useSkin();
+  const { skinTone, undertone, subscriptionTier, setSkinTone, setUndertone, savedFoundations, addSavedFoundation } = useSkin();
   const { isAuthenticated, user, profile, checkSubscription } = useAuth();
 
   const [recommendations, setRecommendations] = useState<PremiumRecommendation[]>([]);
@@ -121,6 +121,44 @@ const ResultsPage = () => {
       title: "Feature coming soon",
       description: "We're working on a report export feature for lifetime members.",
     });
+  };
+
+  const handleSaveFoundation = (foundation: Foundation) => {
+    if (!isPremium) {
+      toast({
+        title: "Premium feature",
+        description: "Saving foundations is a premium feature. Please upgrade to save your results.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const isAlreadySaved = savedFoundations.some(
+      saved => saved.brand === foundation.brand && saved.shade === foundation.shade
+    );
+
+    if (isAlreadySaved) {
+      toast({
+        title: "Already saved",
+        description: "This foundation is already in your saved list.",
+      });
+      return;
+    }
+
+    addSavedFoundation({
+      brand: foundation.brand,
+      shade: foundation.shade
+    });
+
+    toast({
+      title: "Foundation saved!",
+      description: `${foundation.brand} - ${foundation.shade} has been saved to your collection.`,
+    });
+  };
+
+  const handleShopFoundation = (foundation: Foundation) => {
+    const url = getShoppingUrl(foundation.brand, foundation.shade);
+    window.open(url, '_blank');
   };
 
   return (
@@ -246,7 +284,7 @@ const ResultsPage = () => {
                       className="border-red-200 text-red-700 hover:bg-red-50"
                     >
                       <Heart size={14} className="mr-1" />
-                      Saved ({0})
+                      Saved ({savedFoundations.length})
                     </Button>
                   </div>
                 )}
@@ -275,7 +313,8 @@ const ResultsPage = () => {
                       confidence={rec.confidence}
                       reasons={rec.reasons}
                       isPremium={isPremium}
-                      onClick={() => setSelectedFoundation(rec.foundation)}
+                      onClick={() => handleSaveFoundation(rec.foundation)}
+                      onShop={() => handleShopFoundation(rec.foundation)}
                     />
                   ))}
                 </div>

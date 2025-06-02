@@ -137,7 +137,7 @@ const EnhancedShadeCard = ({
             <Button
               size="sm"
               onClick={onShop}
-              className="flex-1 text-xs"
+              className="flex-1 text-xs bg-neuch-800 hover:bg-neuch-700"
               disabled={!isPremium}
             >
               <ShoppingBag size={12} className="mr-1" />
