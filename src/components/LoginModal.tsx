@@ -7,19 +7,16 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogOverlay,
   DialogClose,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
-import { DialogPortal } from "@radix-ui/react-dialog";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -27,10 +24,9 @@ interface LoginModalProps {
 }
 
 const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
-  const { login, loginWithEmail, registerWithEmail } = useAuth();
+  const { signIn, signUp, signInWithOAuth, isLoading } = useAuth();
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
-  const [isLoading, setIsLoading] = useState(false);
   
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
@@ -40,26 +36,13 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [dataProcessingAccepted, setDataProcessingAccepted] = useState(false);
 
-  const handleSocialLogin = async (provider: "google" | "facebook" | "instagram" | "tiktok") => {
+  const handleSocialLogin = async (provider: "google" | "facebook") => {
     try {
-      setIsLoading(true);
-      await login(provider);
-      toast({
-        title: "Success",
-        description: `Logged in with ${provider}`,
-      });
-      onClose();
+      await signInWithOAuth(provider);
+      // Don't close modal immediately as OAuth redirect will handle the flow
     } catch (error) {
-      toast({
-        title: "Login failed",
-        description: `Could not login with ${provider}`,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      // Error handling is done in the auth context
     }
   };
 
@@ -75,21 +58,10 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     }
     
     try {
-      setIsLoading(true);
-      await loginWithEmail(loginEmail, loginPassword);
-      toast({
-        title: "Success",
-        description: "Logged in successfully",
-      });
+      await signIn(loginEmail, loginPassword);
       onClose();
     } catch (error) {
-      toast({
-        title: "Login failed",
-        description: "Invalid email or password",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      // Error handling is done in the auth context
     }
   };
 
@@ -103,40 +75,21 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
       });
       return;
     }
-    
-    if (!termsAccepted || !dataProcessingAccepted) {
+
+    if (registerPassword.length < 6) {
       toast({
-        title: "Agreement required",
-        description: "You must accept the Terms of Service and Data Processing Agreement",
+        title: "Password too short",
+        description: "Password must be at least 6 characters long",
         variant: "destructive",
       });
       return;
     }
     
     try {
-      setIsLoading(true);
-      await registerWithEmail(
-        registerEmail, 
-        registerPassword, 
-        registerName,
-        {
-          termsAccepted,
-          dataProcessingAccepted
-        }
-      );
-      toast({
-        title: "Success",
-        description: "Account created successfully",
-      });
+      await signUp(registerEmail, registerPassword, registerName);
       onClose();
     } catch (error) {
-      toast({
-        title: "Registration failed",
-        description: "Could not create account",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      // Error handling is done in the auth context
     }
   };
 
@@ -176,6 +129,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   disabled={isLoading}
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -187,10 +141,11 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   disabled={isLoading}
+                  required
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
-                Sign In
+                {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
             
@@ -243,37 +198,6 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                 </svg>
                 Facebook
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleSocialLogin("instagram")}
-                disabled={isLoading}
-                className="flex items-center justify-center"
-              >
-                <svg width="20" height="20" className="mr-2" viewBox="0 0 24 24" fill="none">
-                  <linearGradient id="insta" x1="0" y1="0" x2="24" y2="24">
-                    <stop offset="0%" stopColor="#FCAF45" />
-                    <stop offset="33%" stopColor="#E1306C" />
-                    <stop offset="66%" stopColor="#C13584" />
-                    <stop offset="100%" stopColor="#833AB4" />
-                  </linearGradient>
-                  <path 
-                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" 
-                    fill="url(#insta)" 
-                  />
-                </svg>
-                Instagram
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleSocialLogin("tiktok")}
-                disabled={isLoading}
-                className="flex items-center justify-center"
-              >
-                <svg width="20" height="20" className="mr-2" viewBox="0 0 24 24" fill="black">
-                  <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
-                </svg>
-                TikTok
-              </Button>
             </div>
           </TabsContent>
           
@@ -288,6 +212,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   value={registerName}
                   onChange={(e) => setRegisterName(e.target.value)}
                   disabled={isLoading}
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -299,6 +224,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   value={registerEmail}
                   onChange={(e) => setRegisterEmail(e.target.value)}
                   disabled={isLoading}
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -310,45 +236,29 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
                   disabled={isLoading}
+                  required
+                  minLength={6}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Password must be at least 6 characters long
+                </p>
               </div>
               
               <div className="space-y-3 pt-2">
-                <div className="flex items-start space-x-2">
-                  <Checkbox 
-                    id="terms" 
-                    checked={termsAccepted}
-                    onCheckedChange={(checked) => setTermsAccepted(checked === true)}
-                  />
-                  <div className="grid gap-1.5 leading-none">
-                    <label
-                      htmlFor="terms"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      I accept the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms of Service</Link>
-                    </label>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <Checkbox 
-                    id="privacy" 
-                    checked={dataProcessingAccepted}
-                    onCheckedChange={(checked) => setDataProcessingAccepted(checked === true)}
-                  />
-                  <div className="grid gap-1.5 leading-none">
-                    <label
-                      htmlFor="privacy"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      I agree to the <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link> and data processing
-                    </label>
-                  </div>
+                <div className="text-sm text-muted-foreground">
+                  By creating an account, you agree to our{" "}
+                  <Link to="/terms" className="text-primary hover:underline" target="_blank">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy" className="text-primary hover:underline" target="_blank">
+                    Privacy Policy
+                  </Link>
                 </div>
               </div>
               
               <Button type="submit" className="w-full" disabled={isLoading}>
-                Create Account
+                {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
             
@@ -400,37 +310,6 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   <path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 0 1 1-1h3v-4h-3a5 5 0 0 0-5 5v2.01h-2l-.396 3.98h2.396v8.01Z" />
                 </svg>
                 Facebook
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleSocialLogin("instagram")}
-                disabled={isLoading}
-                className="flex items-center justify-center"
-              >
-                <svg width="20" height="20" className="mr-2" viewBox="0 0 24 24" fill="none">
-                  <linearGradient id="insta-reg" x1="0" y1="0" x2="24" y2="24">
-                    <stop offset="0%" stopColor="#FCAF45" />
-                    <stop offset="33%" stopColor="#E1306C" />
-                    <stop offset="66%" stopColor="#C13584" />
-                    <stop offset="100%" stopColor="#833AB4" />
-                  </linearGradient>
-                  <path 
-                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" 
-                    fill="url(#insta-reg)" 
-                  />
-                </svg>
-                Instagram
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleSocialLogin("tiktok")}
-                disabled={isLoading}
-                className="flex items-center justify-center"
-              >
-                <svg width="20" height="20" className="mr-2" viewBox="0 0 24 24" fill="black">
-                  <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
-                </svg>
-                TikTok
               </Button>
             </div>
           </TabsContent>

@@ -1,226 +1,132 @@
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
+import { User, Session } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 import { useSkin } from "./SkinContext";
-import { 
-  secureStore, 
-  secureRetrieve, 
-  secureRemove, 
-  secureClearAll,
-  validateSessionIntegrity 
-} from "@/utils/secureStorage";
 import { toast } from "@/hooks/use-toast";
 
 // Define the authentication provider types
 type SocialProvider = "google" | "facebook" | "instagram" | "tiktok" | "email";
 
-// Define the user type
-interface User {
+// Define the user profile type from our database
+interface UserProfile {
   id: string;
   email: string;
-  name: string;
-  photoUrl?: string;
-  provider: SocialProvider;
-  consentGiven: boolean;
-  termsAccepted: boolean;
-  dataProcessingAccepted: boolean;
-  lastActive: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 interface AuthContextType {
   user: User | null;
+  profile: UserProfile | null;
+  session: Session | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (provider: SocialProvider) => Promise<void>;
-  logout: () => void;
-  loginWithEmail: (email: string, password: string) => Promise<void>;
-  registerWithEmail: (email: string, password: string, name: string, consentOptions: {
-    termsAccepted: boolean;
-    dataProcessingAccepted: boolean;
-  }) => Promise<void>;
-  updateUserConsent: (consentOptions: {
-    termsAccepted?: boolean;
-    dataProcessingAccepted?: boolean;
-  }) => Promise<void>;
+  signUp: (email: string, password: string, fullName?: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signInWithOAuth: (provider: Exclude<SocialProvider, "email">) => Promise<void>;
+  signOut: () => Promise<void>;
+  updateProfile: (updates: Partial<Pick<UserProfile, 'full_name' | 'avatar_url'>>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Session timeout in milliseconds (30 minutes)
-const SESSION_TIMEOUT = 30 * 60 * 1000;
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { setIsLoggedIn } = useSkin();
-  
-  // Function to update user's last active timestamp
-  const updateLastActive = async (currentUser: User) => {
+
+  // Fetch user profile from our database
+  const fetchUserProfile = async (userId: string) => {
     try {
-      const updatedUser = {
-        ...currentUser,
-        lastActive: Date.now().toString()
-      };
-      await secureStore("neuch_user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      setProfile(data);
     } catch (error) {
-      console.error("Failed to update last active timestamp:", error);
+      console.error('Failed to fetch user profile:', error);
     }
   };
 
-  // Check for session timeout
-  const checkSessionTimeout = (storedUser: User) => {
-    const lastActive = parseInt(storedUser.lastActive || "0");
-    const currentTime = Date.now();
-    
-    // If session has timed out, log the user out
-    if (currentTime - lastActive > SESSION_TIMEOUT) {
-      secureRemove("neuch_user");
-      setUser(null);
-      setIsLoggedIn(false);
-      toast({
-        title: "Session Expired",
-        description: "Your session has expired. Please log in again.",
-        variant: "destructive"
-      });
-      return false;
-    }
-    return true;
-  };
-
-  // Check for existing session on mount
+  // Set up auth state listener
   useEffect(() => {
-    const loadStoredUser = async () => {
-      try {
-        // Validate overall session integrity first
-        const isValid = await validateSessionIntegrity();
-        
-        const storedUser = await secureRetrieve("neuch_user");
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser) as User;
-          
-          // Only restore session if it hasn't timed out
-          if (checkSessionTimeout(parsedUser)) {
-            updateLastActive(parsedUser);
-            setUser(parsedUser);
-            setIsLoggedIn(true);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to parse stored user:", error);
-        await secureRemove("neuch_user");
-      } finally {
-        setIsLoading(false);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsLoggedIn(!!session?.user);
+      
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
       }
-    };
+      
+      setIsLoading(false);
+    });
 
-    loadStoredUser();
-    
-    // Set up interval to check session validity periodically
-    const intervalId = setInterval(async () => {
-      if (user) {
-        const isSessionValid = await validateSessionIntegrity();
-        if (!isSessionValid) {
-          logout();
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoggedIn(!!session?.user);
+        
+        if (session?.user) {
+          // Fetch profile when user logs in
+          setTimeout(() => {
+            fetchUserProfile(session.user.id);
+          }, 0);
+        } else {
+          setProfile(null);
+        }
+
+        if (event === 'SIGNED_OUT') {
+          setProfile(null);
         }
       }
-    }, 5 * 60 * 1000); // Check every 5 minutes
-    
-    return () => clearInterval(intervalId);
+    );
+
+    return () => subscription.unsubscribe();
   }, [setIsLoggedIn]);
 
-  // Mock social login function (would be replaced with actual provider SDK implementations)
-  const login = async (provider: SocialProvider) => {
+  // Sign up with email and password
+  const signUp = async (email: string, password: string, fullName?: string) => {
     setIsLoading(true);
     try {
-      // This is where you'd integrate with real provider SDKs
-      console.log(`Logging in with ${provider}...`);
+      const redirectUrl = `${window.location.origin}/`;
       
-      // Mock successful login
-      const mockUser: User = {
-        id: `user_${Math.random().toString(36).substring(2, 11)}`,
-        email: `user@example.com`,
-        name: `Test User (${provider})`,
-        photoUrl: "https://randomuser.me/api/portraits/lego/1.jpg",
-        provider,
-        consentGiven: true,
-        termsAccepted: true,
-        dataProcessingAccepted: true,
-        lastActive: Date.now().toString()
-      };
-      
-      // Store user securely
-      await secureStore("neuch_user", JSON.stringify(mockUser));
-      
-      // Set session data
-      await secureStore('session_token', `session_${Math.random().toString(36).substring(2, 11)}`);
-      await secureStore('user_id', mockUser.id);
-      await secureStore('last_activity', Date.now().toString());
-      
-      setUser(mockUser);
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error(`Login with ${provider} failed:`, error);
-      toast({
-        title: "Login Failed",
-        description: "An error occurred during authentication. Please try again.",
-        variant: "destructive"
-      });
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Mock logout function
-  const logout = async () => {
-    try {
-      await secureClearAll(); // Clear all secure data
-      setUser(null);
-      setIsLoggedIn(false);
-    } catch (error) {
-      console.error("Logout failed:", error);
-      toast({
-        title: "Logout Failed",
-        description: "An error occurred during logout. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  // Mock email login with additional security
-  const loginWithEmail = async (email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      // Simulate delay for security - prevents timing attacks
-      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
-      
-      // Mock email login
-      console.log(`Logging in with email: ${email}...`);
-      const mockUser: User = {
-        id: `user_${Math.random().toString(36).substring(2, 11)}`,
+      const { error } = await supabase.auth.signUp({
         email,
-        name: email.split('@')[0],
-        provider: "email",
-        consentGiven: true,
-        termsAccepted: true,
-        dataProcessingAccepted: true,
-        lastActive: Date.now().toString()
-      };
-      
-      // Store user and session data
-      await secureStore("neuch_user", JSON.stringify(mockUser));
-      await secureStore('session_token', `session_${Math.random().toString(36).substring(2, 11)}`);
-      await secureStore('user_id', mockUser.id);
-      await secureStore('last_activity', Date.now().toString());
-      
-      setUser(mockUser);
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error("Email login failed:", error);
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: fullName ? { full_name: fullName } : undefined
+        }
+      });
+
+      if (error) throw error;
+
       toast({
-        title: "Login Failed",
-        description: "Invalid email or password.",
-        variant: "destructive"
+        title: "Check your email",
+        description: "We've sent you a confirmation link to complete your registration.",
+      });
+    } catch (error: any) {
+      console.error('Sign up error:', error);
+      toast({
+        title: "Sign up failed",
+        description: error.message || "An error occurred during registration.",
+        variant: "destructive",
       });
       throw error;
     } finally {
@@ -228,65 +134,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Mock email registration with consent options and improved security
-  const registerWithEmail = async (
-    email: string, 
-    password: string, 
-    name: string,
-    consentOptions: {
-      termsAccepted: boolean;
-      dataProcessingAccepted: boolean;
-    }
-  ) => {
+  // Sign in with email and password
+  const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Validate consent
-      if (!consentOptions.termsAccepted || !consentOptions.dataProcessingAccepted) {
-        throw new Error("You must accept the terms and data processing agreement");
-      }
-      
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        throw new Error("Please enter a valid email address");
-      }
-      
-      // Validate password strength
-      if (password.length < 8) {
-        throw new Error("Password must be at least 8 characters long");
-      }
-      
-      // Simulate delay for security
-      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
-      
-      // Mock email registration
-      console.log(`Registering with email: ${email}...`);
-      const mockUser: User = {
-        id: `user_${Math.random().toString(36).substring(2, 11)}`,
+      const { error } = await supabase.auth.signInWithPassword({
         email,
-        name,
-        provider: "email",
-        consentGiven: true,
-        termsAccepted: consentOptions.termsAccepted,
-        dataProcessingAccepted: consentOptions.dataProcessingAccepted,
-        lastActive: Date.now().toString()
-      };
-      
-      // Store user and session data securely
-      await secureStore("neuch_user", JSON.stringify(mockUser));
-      await secureStore('session_token', `session_${Math.random().toString(36).substring(2, 11)}`);
-      await secureStore('user_id', mockUser.id);
-      await secureStore('last_activity', Date.now().toString());
-      
-      setUser(mockUser);
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error("Email registration failed:", error);
-      const errorMessage = error instanceof Error ? error.message : "Registration failed. Please try again.";
+        password,
+      });
+
+      if (error) throw error;
+
       toast({
-        title: "Registration Failed",
-        description: errorMessage,
-        variant: "destructive"
+        title: "Welcome back!",
+        description: "You have been signed in successfully.",
+      });
+    } catch (error: any) {
+      console.error('Sign in error:', error);
+      toast({
+        title: "Sign in failed",
+        description: error.message || "Invalid email or password.",
+        variant: "destructive",
       });
       throw error;
     } finally {
@@ -294,36 +162,84 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Update user consent with improved security
-  const updateUserConsent = async (consentOptions: {
-    termsAccepted?: boolean;
-    dataProcessingAccepted?: boolean;
-  }) => {
+  // Sign in with OAuth providers
+  const signInWithOAuth = async (provider: Exclude<SocialProvider, "email">) => {
+    setIsLoading(true);
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider as any,
+        options: {
+          redirectTo: redirectUrl
+        }
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      console.error(`OAuth sign in error (${provider}):`, error);
+      toast({
+        title: "Sign in failed",
+        description: `Could not sign in with ${provider}. Please try again.`,
+        variant: "destructive",
+      });
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Sign out
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully.",
+      });
+    } catch (error: any) {
+      console.error('Sign out error:', error);
+      toast({
+        title: "Sign out failed",
+        description: error.message || "An error occurred during sign out.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  // Update user profile
+  const updateProfile = async (updates: Partial<Pick<UserProfile, 'full_name' | 'avatar_url'>>) => {
     if (!user) return;
-    
+
     try {
-      const updatedUser = {
-        ...user,
-        termsAccepted: consentOptions.termsAccepted ?? user.termsAccepted,
-        dataProcessingAccepted: consentOptions.dataProcessingAccepted ?? user.dataProcessingAccepted,
-        consentGiven: true,
-        lastActive: Date.now().toString()
-      };
-      
-      await secureStore("neuch_user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
-      
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      // Refresh profile
+      await fetchUserProfile(user.id);
+
       toast({
-        title: "Preferences Updated",
-        description: "Your privacy preferences have been updated successfully."
+        title: "Profile updated",
+        description: "Your profile has been updated successfully.",
       });
-    } catch (error) {
-      console.error("Failed to update consent:", error);
+    } catch (error: any) {
+      console.error('Profile update error:', error);
       toast({
-        title: "Update Failed",
-        description: "Failed to update your preferences. Please try again.",
-        variant: "destructive"
+        title: "Update failed",
+        description: error.message || "Failed to update profile.",
+        variant: "destructive",
       });
+      throw error;
     }
   };
 
@@ -331,13 +247,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
+        profile,
+        session,
         isAuthenticated: !!user,
         isLoading,
-        login,
-        logout,
-        loginWithEmail,
-        registerWithEmail,
-        updateUserConsent,
+        signUp,
+        signIn,
+        signInWithOAuth,
+        signOut,
+        updateProfile,
       }}
     >
       {children}
