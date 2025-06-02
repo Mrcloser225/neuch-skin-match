@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -21,6 +20,8 @@ import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 import ShopPage from "./pages/ShopPage";
 import AuthPage from "./pages/AuthPage";
+import PremiumDashboard from "./pages/PremiumDashboard";
+import SavedFoundationsPage from "./pages/SavedFoundationsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,6 +87,8 @@ const App = () => {
                     <Route path="/analysis" element={<AnalysisPage />} />
                     <Route path="/results" element={<ResultsPage />} />
                     <Route path="/pricing" element={<PricingPage />} />
+                    <Route path="/premium-dashboard" element={<PremiumDashboard />} />
+                    <Route path="/saved-foundations" element={<SavedFoundationsPage />} />
                     <Route path="/shop" element={<ShopPage />} />
                     <Route path="/privacy" element={<PrivacyPolicy />} />
                     <Route path="/terms" element={<TermsOfService />} />

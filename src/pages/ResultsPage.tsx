@@ -115,6 +115,34 @@ const ResultsPage = () => {
 
         <main className="flex-1 p-6">
           <div className="max-w-4xl mx-auto space-y-8">
+            {/* Premium Welcome Banner */}
+            {isPremium && (
+              <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg p-4 border border-amber-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center">
+                      <Sparkles className="text-white" size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-neuch-900">Premium Features Active</h3>
+                      <p className="text-sm text-neuch-700">
+                        You now have access to advanced matching, premium brands, and unlimited scans!
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate("/premium-dashboard")}
+                    className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                  >
+                    <Settings size={14} className="mr-1" />
+                    Dashboard
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* Results Summary */}
             <div className="text-center">
               <h1 className="text-3xl font-bold text-neuch-900 mb-3">
@@ -133,6 +161,11 @@ const ResultsPage = () => {
                   Undertone:{" "}
                   <span className="font-medium text-neuch-900">{undertone}</span>
                 </Badge>
+                {isPremium && (
+                  <Badge className="bg-amber-500 text-white">
+                    {subscriptionTier === 'lifetime' ? 'LIFETIME' : 'PREMIUM'}
+                  </Badge>
+                )}
               </div>
             </div>
 
@@ -175,6 +208,15 @@ const ResultsPage = () => {
                         Export Report
                       </Button>
                     )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate("/saved-foundations")}
+                      className="border-red-200 text-red-700 hover:bg-red-50"
+                    >
+                      <Heart size={14} className="mr-1" />
+                      Saved ({0})
+                    </Button>
                   </div>
                 )}
               </div>
@@ -201,6 +243,7 @@ const ResultsPage = () => {
                       match={rec.match}
                       confidence={rec.confidence}
                       reasons={rec.reasons}
+                      isPremium={isPremium}
                       onClick={() => setSelectedFoundation(rec.foundation)}
                     />
                   ))}
