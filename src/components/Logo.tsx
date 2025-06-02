@@ -26,7 +26,7 @@ const Logo = ({ size = "md", color = "dark", className = "" }: LogoProps) => {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={`font-lexend font-semibold tracking-tight ${sizes[size]} ${colors[color]} ${className}`}
     >
-      Neuch.
+      Neuch<span className="bg-gradient-to-r from-amber-200 via-orange-300 via-amber-400 via-orange-500 via-amber-600 via-orange-700 to-amber-900 bg-clip-text text-transparent">.</span>
     </motion.div>
   );
 };
