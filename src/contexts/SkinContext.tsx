@@ -1,3 +1,4 @@
+
 import { createContext, useState, useContext, ReactNode } from "react";
 
 // Define skin conditions type
@@ -34,6 +35,7 @@ interface SkinContextType {
     name: string | null;
     savedFoundations?: Array<{ brand: string; shade: string }>;
   }) => void;
+  savedFoundations: SavedFoundation[];
   addSavedFoundation: (foundation: SavedFoundation) => void;
   removeSavedFoundation: (foundation: SavedFoundation) => void;
 }
@@ -105,6 +107,7 @@ export const SkinProvider = ({ children }: { children: ReactNode }) => {
         setSubscriptionTier,
         userProfile,
         setUserProfile,
+        savedFoundations,
         addSavedFoundation,
         removeSavedFoundation,
       }}

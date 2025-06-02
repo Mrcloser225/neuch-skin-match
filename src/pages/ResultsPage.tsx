@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -38,7 +39,7 @@ const ResultsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { userSkinTone, userUndertone, subscriptionTier } = useSkin();
+  const { skinTone, undertone, subscriptionTier } = useSkin();
   const { isAuthenticated, user, profile } = useAuth();
 
   const [recommendations, setRecommendations] = useState<PremiumRecommendation[]>([]);
@@ -48,7 +49,7 @@ const ResultsPage = () => {
   const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
-    if (!userSkinTone || !userUndertone) {
+    if (!skinTone || !undertone) {
       toast({
         title: "Missing skin data",
         description: "Please scan your skin first to get personalized recommendations.",
@@ -61,10 +62,10 @@ const ResultsPage = () => {
     const premiumStatus = subscriptionTier === "premium" || subscriptionTier === "lifetime";
     setIsPremium(premiumStatus);
 
-    const recs = getPremiumRecommendations(userUndertone, userSkinTone, premiumStatus);
+    const recs = getPremiumRecommendations(undertone, skinTone, premiumStatus);
     setRecommendations(recs);
     setIsLoading(false);
-  }, [userSkinTone, userUndertone, subscriptionTier, navigate, toast]);
+  }, [skinTone, undertone, subscriptionTier, navigate, toast]);
 
   const exportReport = () => {
     toast({
@@ -99,7 +100,7 @@ const ResultsPage = () => {
             {/* Results Summary */}
             <div className="text-center">
               <h1 className="text-3xl font-bold text-neuch-900 mb-3">
-                {userSkinTone && userUndertone
+                {skinTone && undertone
                   ? "Here are your personalized foundation matches"
                   : "Analyzing Your Skin..."}
               </h1>
@@ -110,11 +111,11 @@ const ResultsPage = () => {
               <div className="mt-4 flex items-center justify-center gap-4">
                 <Badge variant="secondary">
                   Skin Tone:{" "}
-                  <span className="font-medium text-neuch-900">{userSkinTone}</span>
+                  <span className="font-medium text-neuch-900">{skinTone}</span>
                 </Badge>
                 <Badge variant="secondary">
                   Undertone:{" "}
-                  <span className="font-medium text-neuch-900">{userUndertone}</span>
+                  <span className="font-medium text-neuch-900">{undertone}</span>
                 </Badge>
               </div>
             </div>
@@ -164,14 +165,7 @@ const ResultsPage = () => {
 
               {!isPremium && (
                 <PremiumBanner
-                  title="Unlock Premium Foundation Matching"
-                  description="Get access to 12+ premium brand recommendations, advanced matching algorithms, and exclusive shopping links."
-                  features={[
-                    "Premium brands (Fenty, Charlotte Tilbury, Armani)",
-                    "Advanced confidence scoring",
-                    "Detailed matching reasons",
-                    "Save and compare results"
-                  ]}
+                  onUpgrade={() => navigate("/pricing")}
                 />
               )}
 
