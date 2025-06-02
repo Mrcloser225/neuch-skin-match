@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Camera as CameraIcon, Upload, Info } from "lucide-react";
+import { Camera as CameraIcon, Upload, Info, AlertCircle } from "lucide-react";
 
 import PageTransition from "@/components/PageTransition";
 import BackButton from "@/components/BackButton";
@@ -31,13 +30,25 @@ import {
   CollapsibleContent,
   CollapsibleTrigger 
 } from "@/components/ui/collapsible";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
+import { validateImageForSkinAnalysis } from "@/utils/imageValidation";
+import { useToast } from "@/hooks/use-toast";
 
 const CameraPage = () => {
   const navigate = useNavigate();
   const { setCapturedImage, setSkinCondition, skinCondition, isLoggedIn, subscriptionTier } = useSkin();
   const { t, isRtl } = useLanguage();
+  const { toast } = useToast();
   const [showCamera, setShowCamera] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [validationError, setValidationError] = useState<{
+    message: string;
+    recommendations: string[];
+  } | null>(null);
 
   const handleCapture = (image: string) => {
     setCapturedImage(image);
@@ -45,9 +56,29 @@ const CameraPage = () => {
     navigate("/analysis");
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Clear any previous validation errors
+      setValidationError(null);
+      
+      // Validate the image
+      const validation = await validateImageForSkinAnalysis(file);
+      
+      if (!validation.isValid) {
+        setValidationError({
+          message: validation.message,
+          recommendations: validation.recommendations || []
+        });
+        toast({
+          title: "Image Not Suitable",
+          description: validation.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Image is valid, proceed with upload
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
@@ -87,6 +118,24 @@ const CameraPage = () => {
                 {t("camera.subtitle")}
               </p>
             </div>
+
+            {validationError && (
+              <Alert variant="destructive" className="mt-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Image Not Suitable</AlertTitle>
+                <AlertDescription className="mt-2">
+                  <p className="mb-2">{validationError.message}</p>
+                  <div className="text-sm">
+                    <p className="font-medium mb-1">For best results:</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      {validationError.recommendations.map((rec, index) => (
+                        <li key={index}>{rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
 
             <div className="space-y-4">
               <div className="space-y-2">
