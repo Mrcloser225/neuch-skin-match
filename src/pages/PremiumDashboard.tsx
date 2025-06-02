@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Heart, ShoppingBag, Download, Settings, Sparkles } from "lucide-react";
+import { Crown, Heart, ShoppingBag, Settings, Sparkles } from "lucide-react";
 
 import PageTransition from "@/components/PageTransition";
 import BackButton from "@/components/BackButton";
@@ -32,77 +32,83 @@ const PremiumDashboard = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 to-amber-100">
-        <header className="p-6 flex items-center border-b border-amber-200">
+      <div className="min-h-screen flex flex-col bg-white">
+        <header className="p-6 flex items-center border-b border-neuch-200 bg-white">
           <BackButton to="/results" />
           <Logo className="mx-auto" />
         </header>
 
-        <main className="flex-1 p-6">
-          <div className="max-w-4xl mx-auto space-y-6">
+        <main className="flex-1 p-6 bg-neuch-50">
+          <div className="max-w-4xl mx-auto space-y-8">
             {/* Welcome Section */}
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <Crown className="text-amber-500" size={24} />
+            <div className="text-center bg-white rounded-2xl p-8 shadow-subtle">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Crown className="text-neuch-600" size={28} />
                 <h1 className="text-3xl font-bold text-neuch-900">Premium Dashboard</h1>
               </div>
-              <p className="text-neuch-600">
+              <p className="text-neuch-600 text-lg mb-4">
                 Welcome to your premium experience! You now have access to all advanced features.
               </p>
-              <Badge className="mt-2 bg-amber-500 text-white">
+              <Badge className="bg-neuch-800 text-white px-4 py-2">
                 {subscriptionTier === 'lifetime' ? 'LIFETIME MEMBER' : 'PREMIUM MEMBER'}
               </Badge>
             </div>
 
             {/* Quick Actions */}
-            <div className="grid md:grid-cols-3 gap-4">
-              <Card className="border-amber-200">
-                <CardContent className="p-4 text-center">
-                  <Sparkles className="text-amber-500 mx-auto mb-2" size={24} />
-                  <h3 className="font-medium mb-1">Unlimited Scans</h3>
-                  <p className="text-xs text-neuch-600 mb-3">
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card className="bg-white border-neuch-200 shadow-subtle hover:shadow-elevated transition-shadow">
+                <CardContent className="p-6 text-center">
+                  <div className="w-12 h-12 bg-neuch-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Sparkles className="text-neuch-600" size={24} />
+                  </div>
+                  <h3 className="font-semibold text-neuch-900 mb-2">Unlimited Scans</h3>
+                  <p className="text-sm text-neuch-600 mb-4">
                     Scan your skin as many times as you want
                   </p>
                   <Button 
                     size="sm" 
                     onClick={() => navigate("/camera")}
-                    className="w-full bg-amber-500 hover:bg-amber-600"
+                    className="w-full bg-neuch-800 hover:bg-neuch-700 text-white"
                   >
                     Start New Scan
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card className="border-green-200">
-                <CardContent className="p-4 text-center">
-                  <Heart className="text-red-500 mx-auto mb-2" size={24} />
-                  <h3 className="font-medium mb-1">Saved Foundations</h3>
-                  <p className="text-xs text-neuch-600 mb-3">
+              <Card className="bg-white border-neuch-200 shadow-subtle hover:shadow-elevated transition-shadow">
+                <CardContent className="p-6 text-center">
+                  <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Heart className="text-red-500" size={24} />
+                  </div>
+                  <h3 className="font-semibold text-neuch-900 mb-2">Saved Foundations</h3>
+                  <p className="text-sm text-neuch-600 mb-4">
                     {savedFoundations.length} foundations saved
                   </p>
                   <Button 
                     size="sm" 
                     variant="outline"
                     onClick={() => navigate("/saved-foundations")}
-                    className="w-full"
+                    className="w-full border-neuch-300 text-neuch-700 hover:bg-neuch-50"
                   >
                     View Saved
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card className="border-blue-200">
-                <CardContent className="p-4 text-center">
-                  <ShoppingBag className="text-green-500 mx-auto mb-2" size={24} />
-                  <h3 className="font-medium mb-1">Premium Brands</h3>
-                  <p className="text-xs text-neuch-600 mb-3">
+              <Card className="bg-white border-neuch-200 shadow-subtle hover:shadow-elevated transition-shadow">
+                <CardContent className="p-6 text-center">
+                  <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <ShoppingBag className="text-green-600" size={24} />
+                  </div>
+                  <h3 className="font-semibold text-neuch-900 mb-2">Premium Brands</h3>
+                  <p className="text-sm text-neuch-600 mb-4">
                     Access to 12+ premium brands
                   </p>
                   <Button 
                     size="sm" 
                     variant="outline"
                     onClick={() => navigate("/results")}
-                    className="w-full"
+                    className="w-full border-neuch-300 text-neuch-700 hover:bg-neuch-50"
                   >
                     View Results
                   </Button>
@@ -111,21 +117,26 @@ const PremiumDashboard = () => {
             </div>
 
             {/* Premium Features List */}
-            <PremiumFeaturesList userTier={subscriptionTier} />
+            <div className="bg-white rounded-2xl shadow-subtle">
+              <PremiumFeaturesList userTier={subscriptionTier} />
+            </div>
 
             {/* Subscription Management */}
-            <div className="flex justify-center">
-              <SubscriptionManager />
+            <div className="bg-white rounded-2xl p-6 shadow-subtle">
+              <div className="flex justify-center">
+                <SubscriptionManager />
+              </div>
             </div>
 
             {/* Additional Actions */}
-            <div className="text-center space-y-3">
-              <h3 className="font-medium text-neuch-900">Need Help?</h3>
+            <div className="text-center bg-white rounded-2xl p-6 shadow-subtle">
+              <h3 className="font-semibold text-neuch-900 mb-4">Need Help?</h3>
               <div className="flex justify-center gap-3">
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => navigate("/terms")}
+                  className="border-neuch-300 text-neuch-700 hover:bg-neuch-50"
                 >
                   Terms of Service
                 </Button>
@@ -133,6 +144,7 @@ const PremiumDashboard = () => {
                   variant="outline" 
                   size="sm"
                   onClick={() => navigate("/privacy")}
+                  className="border-neuch-300 text-neuch-700 hover:bg-neuch-50"
                 >
                   Privacy Policy
                 </Button>
