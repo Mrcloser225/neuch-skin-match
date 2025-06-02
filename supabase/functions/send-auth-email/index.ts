@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
       status: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, webhook-id, webhook-timestamp, webhook-signature',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
       },
     })
@@ -27,20 +27,31 @@ Deno.serve(async (req) => {
 
   try {
     const payload = await req.text()
+    console.log('Received webhook payload length:', payload.length)
+    
+    // Get headers for webhook verification
     const headers = Object.fromEntries(req.headers)
+    console.log('Webhook headers:', JSON.stringify(headers, null, 2))
     
     // If webhook secret is configured, verify the webhook
     if (hookSecret) {
+      console.log('Webhook secret configured, verifying...')
       const wh = new Webhook(hookSecret)
       try {
         wh.verify(payload, headers)
+        console.log('Webhook verification successful')
       } catch (error) {
         console.error('Webhook verification failed:', error)
+        console.error('Expected secret format, received headers:', headers)
         return new Response('Unauthorized', { status: 401 })
       }
+    } else {
+      console.log('No webhook secret configured, skipping verification')
     }
 
     const webhookData = JSON.parse(payload)
+    console.log('Parsed webhook data:', JSON.stringify(webhookData, null, 2))
+    
     const {
       user,
       email_data: { token, token_hash, redirect_to, email_action_type },
