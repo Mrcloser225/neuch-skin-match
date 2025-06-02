@@ -16,7 +16,7 @@ export const getPremiumRecommendations = (
   isPremium: boolean = false
 ): PremiumRecommendation[] => {
   // Get base recommendations
-  const baseRecs = getRecommendations(undertone, skinTone);
+  const baseRecs = getRecommendations(undertone as "cool" | "neutral" | "olive", skinTone);
   
   // For premium users, add premium foundations
   const allFoundations = isPremium 
@@ -44,27 +44,19 @@ export const getPremiumRecommendations = (
         }
       }
 
-      // Skin tone matching (35% weight)
-      if (foundation.skinTone === skinTone) {
+      // Basic skin tone compatibility (35% weight)
+      // Since Foundation type doesn't have skinTone, we'll use shade name analysis
+      const shadeAnalysis = analyzeShadeDepth(foundation.shade);
+      const userDepth = analyzeSkinToneDepth(skinTone);
+      
+      if (shadeAnalysis === userDepth) {
         match += 35;
         confidence += 25;
-        reasons.push(`Exact ${skinTone} depth match`);
+        reasons.push(`Good depth match for ${skinTone}`);
       } else {
-        // Adjacent skin tones get partial credit
-        const tones = ['light', 'light-medium', 'medium', 'medium-dark', 'dark'];
-        const userIndex = tones.indexOf(skinTone);
-        const foundationIndex = tones.indexOf(foundation.skinTone);
-        const distance = Math.abs(userIndex - foundationIndex);
-        
-        if (distance === 1) {
-          match += 20;
-          confidence += 15;
-          reasons.push(`Close ${foundation.skinTone} depth match`);
-        } else if (distance === 2) {
-          match += 10;
-          confidence += 8;
-          reasons.push(`Workable ${foundation.skinTone} depth`);
-        }
+        match += 15;
+        confidence += 10;
+        reasons.push(`Workable depth option`);
       }
 
       // Premium brand bonus (15% weight for premium users)
@@ -93,6 +85,33 @@ export const getPremiumRecommendations = (
     .slice(0, isPremium ? 12 : 4); // More results for premium users
 
   return recommendations;
+};
+
+// Helper function to analyze shade depth from shade name
+const analyzeShadeDepth = (shade: string): string => {
+  const lowerShade = shade.toLowerCase();
+  if (lowerShade.includes('fair') || lowerShade.includes('porcelain') || lowerShade.includes('alabaster')) {
+    return 'light';
+  } else if (lowerShade.includes('light') || lowerShade.includes('cream')) {
+    return 'light-medium';
+  } else if (lowerShade.includes('medium')) {
+    return 'medium';
+  } else if (lowerShade.includes('deep') || lowerShade.includes('dark')) {
+    return 'dark';
+  }
+  return 'medium'; // default
+};
+
+// Helper function to map skin tone to depth
+const analyzeSkinToneDepth = (skinTone: string): string => {
+  const toneMap: Record<string, string> = {
+    'light': 'light',
+    'light-medium': 'light-medium',
+    'medium': 'medium',
+    'medium-dark': 'medium',
+    'dark': 'dark'
+  };
+  return toneMap[skinTone] || 'medium';
 };
 
 export const getShoppingUrl = (brand: string, shade: string): string => {

@@ -1,4 +1,3 @@
-
 import { createContext, useState, useContext, ReactNode } from "react";
 
 // Define skin conditions type
@@ -6,6 +5,11 @@ type SkinCondition = "normal" | "eczema" | "vitiligo" | "albinism" | "hyperpigme
 
 // Define subscription tier type
 type SubscriptionTier = "free" | "premium" | "lifetime" | null;
+
+interface SavedFoundation {
+  brand: string;
+  shade: string;
+}
 
 interface SkinContextType {
   capturedImage: string | null;
@@ -30,7 +34,8 @@ interface SkinContextType {
     name: string | null;
     savedFoundations?: Array<{ brand: string; shade: string }>;
   }) => void;
-  addSavedFoundation: (foundation: { brand: string; shade: string }) => void;
+  addSavedFoundation: (foundation: SavedFoundation) => void;
+  removeSavedFoundation: (foundation: SavedFoundation) => void;
 }
 
 const SkinContext = createContext<SkinContextType | null>(null);
@@ -51,6 +56,7 @@ export const SkinProvider = ({ children }: { children: ReactNode }) => {
     name: null,
     savedFoundations: [],
   });
+  const [savedFoundations, setSavedFoundations] = useState<SavedFoundation[]>([]);
 
   // Custom setter for userProfile that handles the optional savedFoundations
   const setUserProfile = (profile: {
@@ -66,11 +72,20 @@ export const SkinProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
-  const addSavedFoundation = (foundation: { brand: string; shade: string }) => {
-    setUserProfileState(prev => ({
-      ...prev,
-      savedFoundations: [...prev.savedFoundations, foundation]
-    }));
+  const addSavedFoundation = (foundation: SavedFoundation) => {
+    setSavedFoundations(prev => {
+      const exists = prev.some(f => f.brand === foundation.brand && f.shade === foundation.shade);
+      if (!exists) {
+        return [...prev, foundation];
+      }
+      return prev;
+    });
+  };
+
+  const removeSavedFoundation = (foundation: SavedFoundation) => {
+    setSavedFoundations(prev => 
+      prev.filter(f => !(f.brand === foundation.brand && f.shade === foundation.shade))
+    );
   };
 
   return (
@@ -91,6 +106,7 @@ export const SkinProvider = ({ children }: { children: ReactNode }) => {
         userProfile,
         setUserProfile,
         addSavedFoundation,
+        removeSavedFoundation,
       }}
     >
       {children}

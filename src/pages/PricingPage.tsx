@@ -104,7 +104,7 @@ const PricingPage = () => {
   const { toast } = useToast();
   const { subscriptionTier, setSubscriptionTier } = useSkin();
   const { isAuthenticated, user } = useAuth();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isProcessing, setIsProcessing] = useState<string | null>(null); // Track which plan is processing
 
   const handleSubscribe = async (plan: PricingPlan) => {
     if (plan.tier === "free") {
@@ -127,7 +127,7 @@ const PricingPage = () => {
       return;
     }
 
-    setIsProcessing(true);
+    setIsProcessing(plan.id); // Set processing state for this specific plan
     
     try {
       console.log("Creating checkout session for plan:", plan.id);
@@ -203,7 +203,7 @@ const PricingPage = () => {
         variant: "destructive"
       });
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(null); // Clear processing state
     }
   };
 
@@ -270,13 +270,13 @@ const PricingPage = () => {
                     <Button 
                       className={`w-full ${plan.tier === "free" ? "bg-gray-200 hover:bg-gray-300 text-gray-800" : "bg-black hover:bg-gray-800 text-white"}`}
                       onClick={() => handleSubscribe(plan)}
-                      disabled={isProcessing || (subscriptionTier === plan.tier && plan.tier !== 'free')}
+                      disabled={isProcessing === plan.id || (subscriptionTier === plan.tier && plan.tier !== 'free')}
                     >
                       {subscriptionTier === plan.tier && plan.tier !== 'free' ? "Current Plan" : 
                        subscriptionTier === 'free' && plan.tier === 'free' ? "Current Plan" :
                         plan.tier === "free" ? "Select Free Plan" : 
                         !isAuthenticated ? "Sign In to Subscribe" : 
-                        isProcessing ? "Processing..." : `Get ${plan.name}`}
+                        isProcessing === plan.id ? "Processing..." : `Get ${plan.name}`}
                     </Button>
                   </CardFooter>
                 </Card>
