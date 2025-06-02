@@ -53,18 +53,15 @@ export const getAIRecommendations = async (
 
 export const getTrendingProducts = async (): Promise<any> => {
   try {
-    const { data, error } = await supabase
-      .from('daily_product_discoveries')
-      .select('discovery_data')
-      .order('discovery_date', { ascending: false })
-      .limit(1);
+    // Use raw SQL query to access the new table until types are updated
+    const { data, error } = await supabase.rpc('get_latest_discovery');
 
     if (error) {
       console.error('Error fetching trending products:', error);
       return null;
     }
 
-    return data?.[0]?.discovery_data || null;
+    return data || null;
   } catch (error) {
     console.error('Error in getTrendingProducts:', error);
     return null;
