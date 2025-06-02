@@ -10,7 +10,7 @@ interface LogoProps {
 const Logo = ({ size = "md", color = "dark", className = "" }: LogoProps) => {
   const sizes = {
     sm: "text-xl",
-    md: "text-2xl",
+    md: "text-2xl", 
     lg: "text-4xl",
   };
 
@@ -24,9 +24,9 @@ const Logo = ({ size = "md", color = "dark", className = "" }: LogoProps) => {
       initial={{ opacity: 0, y: -5 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`font-instagram font-semibold tracking-tight ${sizes[size]} ${colors[color]} ${className}`}
+      className={`font-lexend font-semibold tracking-tight ${sizes[size]} ${colors[color]} ${className}`}
     >
-      neuch
+      Neuch.
     </motion.div>
   );
 };
