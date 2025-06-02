@@ -1,10 +1,16 @@
 
 import { motion } from "framer-motion";
-import { Heart, ShoppingBag, Star, Sparkles, Leaf, Award } from "lucide-react";
+import { Heart, ShoppingBag, Star, Sparkles, Leaf, Award, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { AIRecommendation, getPricePointLabel, getPricePointColor } from "@/services/aiRecommendations";
+import { 
+  AIRecommendation, 
+  getPricePointLabel, 
+  getPricePointColor,
+  getSocialSentimentColor,
+  getSocialSentimentLabel 
+} from "@/services/aiRecommendations";
 
 interface AIRecommendationCardProps {
   recommendation: AIRecommendation;
@@ -54,6 +60,14 @@ const AIRecommendationCard = ({
             <Sparkles size={10} className="mr-1" />
             AI Pick
           </Badge>
+          
+          {recommendation.socialSentiment && recommendation.socialSentiment >= 8 && (
+            <Badge className={`bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs`}>
+              <TrendingUp size={10} className="mr-1" />
+              {getSocialSentimentLabel(recommendation.socialSentiment)}
+            </Badge>
+          )}
+          
           {recommendation.specialFeatures.includes('Clean ingredients') && (
             <Badge className="bg-green-500 text-white text-xs">
               <Leaf size={10} className="mr-1" />
@@ -88,6 +102,18 @@ const AIRecommendationCard = ({
                 <span className="text-xs font-medium">{recommendation.confidence}%</span>
               </div>
             </div>
+
+            {recommendation.socialSentiment && (
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-neuch-600">Social Buzz</span>
+                <div className="flex items-center gap-1">
+                  <TrendingUp size={10} className={getSocialSentimentColor(recommendation.socialSentiment)} />
+                  <span className={`text-xs font-medium ${getSocialSentimentColor(recommendation.socialSentiment)}`}>
+                    {recommendation.socialSentiment}/10
+                  </span>
+                </div>
+              </div>
+            )}
             
             <div>
               <button

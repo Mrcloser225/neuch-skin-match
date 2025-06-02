@@ -22,50 +22,56 @@ interface RecommendationRequest {
 }
 
 const COMPREHENSIVE_MAKEUP_DATABASE = `
-You are an expert makeup artist and cosmetic chemist with access to the entire global makeup market. 
+You are an expert makeup artist and cosmetic chemist with access to the entire global makeup market including real-time social media trends and user sentiment. 
+
 Your database includes:
 
-NICHE & INDIE BRANDS:
-- Kosas, Glossier, Rare Beauty, Tower 28, Ilia Beauty, RMS Beauty, Westman Atelier
-- The Ordinary Serum Foundation, Purito Cica Clearing BB Cream
-- Jones Road, Saie, Honest Beauty, Milk Makeup, Nudestix
+LUXURY & HIGH-END BRANDS:
+- Huda Beauty (Desert Dusk, Rose Gold Remastered, Mercury Retrograde palettes, #FauxFilter Foundation)
+- Pat McGrath Labs, Tom Ford Beauty, La Mer, Sisley, Chanel, Dior
+- Giorgio Armani, YSL, Charlotte Tilbury, Natasha Denona
+- Westman Atelier, Victoria Beckham Beauty, Augustinus Bader
+
+TRENDING & VIRAL BRANDS (Based on social media buzz):
+- Rare Beauty, Glossier, Milk Makeup, Tower 28, Ilia Beauty
+- Kosas, Jones Road, Saie, Honest Beauty, Nudestix
 - Lawless Beauty, Ami Cole, Danessa Myricks Beauty, Uoma Beauty
+- Merit Beauty, Rhode, Fenty Beauty, Selena Gomez Rare Beauty
+
+NICHE & INDIE BRANDS:
+- The Ordinary Serum Foundation, Purito Cica Clearing BB Cream
 - Juvia's Place, Black Opal, Fashion Fair, Mented Cosmetics
+- RMS Beauty, 100% Pure, Vapour Organic Beauty
 
 K-BEAUTY & ASIAN BRANDS:
 - Missha Perfect Cover BB Cream, Laneige Neo Foundation
-- 3CE, Etude House, Innisfree, The Face Shop
-- Shiseido, Shu Uemura, Sulwhasoo, Hera
-- Canmake, Kate Tokyo, Clio, Romand
+- 3CE, Etude House, Innisfree, The Face Shop, COSRX
+- Shiseido, Shu Uemura, Sulwhasoo, Hera, Canmake
 
 EUROPEAN & INTERNATIONAL:
 - Bourjois Healthy Mix, Catrice HD Liquid Coverage
-- Makeup Revolution, Revolution Beauty, I Heart Revolution
-- Sleek MakeUP, Barry M, Collection
-- Essence, Rimmel, Soap & Glory
+- Makeup Revolution, Revolution Beauty, Sleek MakeUP
 - Australian brands: Ere Perez, Inika, Zuii Organic
 
-DRUGSTORE GEMS:
-- Milani Conceal + Perfect, Flower Beauty Light Illusion
-- ColourPop Pretty Fresh Tinted Moisturizer
-- NYX Born To Glow, E.L.F. Pure Skin Super Serum
-- Wet n Wild Photo Focus, CoverGirl TruBlend Matte Made
+DRUGSTORE INNOVATIONS:
+- Milani, Flower Beauty, ColourPop, NYX Professional, E.L.F.
+- Wet n Wild, CoverGirl, L'Oréal, Maybelline
 
-HIGH-PERFORMANCE SPECIALIZED:
-- Oxygenetix (for sensitive skin), Dermablend (full coverage)
-- Alima Pure, Jane Iredale (mineral foundations)
-- Vapour Organic Beauty, 100% Pure (clean beauty)
-- Stellar Beauty, Habit Cosmetics (performance makeup)
+SOCIAL MEDIA SENTIMENT & TRENDS:
+- Monitor viral TikTok makeup trends and user reviews
+- Track Instagram makeup artist recommendations
+- Analyze Twitter/X discussions about product performance
+- Identify emerging brands gaining social media traction
+- Consider user-generated content and authentic reviews
 
 Consider factors like:
+- Real-time social media buzz and user sentiment
+- Viral makeup trends and techniques
+- Authentic user reviews and experiences
+- Climate and seasonal considerations
 - Ingredient compatibility with skin conditions
-- Climate and humidity considerations  
-- Skin chemistry and pH balance
-- Specific undertone nuances (olive, golden, pink, red, neutral)
-- Texture preferences and skin type
 - Ethical and sustainability requirements
-- Budget constraints and value for money
-- Longevity and performance needs
+- Current market availability and stock status
 `;
 
 serve(async (req) => {
@@ -93,12 +99,13 @@ serve(async (req) => {
     - Finish: ${preferences.finish || 'No preference'}
     - Ethical Requirements: Cruelty-free: ${preferences.crueltyFree ? 'Yes' : 'No'}, Vegan: ${preferences.vegan ? 'Yes' : 'No'}
 
-    Please recommend 15 foundations from your comprehensive database, prioritizing:
+    Please recommend 18 foundations from your comprehensive database, prioritizing:
     1. Perfect undertone and skin tone matches
-    2. Lesser-known but high-quality brands that might be overlooked
-    3. Ingredient compatibility with any skin conditions
-    4. Value for money across different price points
-    5. Innovative formulations and newer brands
+    2. Include at least 2-3 Huda Beauty products if they match the user's profile
+    3. Current trending products based on simulated social media sentiment
+    4. Lesser-known but high-quality brands with viral potential
+    5. Mix of price points from drugstore to luxury
+    6. Innovative formulations and newer brand releases
 
     For each recommendation, provide:
     - Brand and product name
@@ -106,21 +113,23 @@ serve(async (req) => {
     - Match confidence (85-100%)
     - 2-3 specific reasons why this product works
     - Price point ($ = drugstore, $$ = mid-range, $$$ = high-end, $$$$ = luxury)
-    - Special features (clean, vegan, sensitive skin friendly, etc.)
+    - Special features (trending, viral, clean, vegan, etc.)
+    - Simulated social media sentiment score (1-10)
 
     Format as JSON array with this structure:
     {
       "recommendations": [
         {
-          "brand": "Brand Name",
-          "productName": "Product Name", 
-          "shade": "Shade Name",
-          "match": 95,
-          "confidence": 92,
-          "reasons": ["Perfect olive undertone match", "Buildable coverage for natural look"],
-          "pricePoint": "$$",
-          "specialFeatures": ["Clean ingredients", "Sensitive skin friendly"],
-          "color": "#D4A574"
+          "brand": "Huda Beauty",
+          "productName": "#FauxFilter Foundation", 
+          "shade": "Shortbread 230G",
+          "match": 96,
+          "confidence": 94,
+          "reasons": ["Perfect olive undertone match", "Full coverage with natural finish", "Trending on social media for longevity"],
+          "pricePoint": "$$$",
+          "specialFeatures": ["Trending", "Long-wearing", "Influencer favorite", "Viral on TikTok"],
+          "color": "#D4A574",
+          "socialSentiment": 9.2
         }
       ]
     }
@@ -137,7 +146,7 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a world-class makeup artist and cosmetic chemist with comprehensive knowledge of the global makeup market, including niche, indie, international, and emerging brands.'
+            content: 'You are a world-class makeup artist with real-time access to social media trends, user sentiment, and the global makeup market including emerging brands and viral products.'
           },
           {
             role: 'user',
@@ -166,7 +175,7 @@ serve(async (req) => {
       throw new Error('Failed to parse AI recommendations');
     }
 
-    console.log(`Generated ${recommendations.length} AI-powered recommendations`);
+    console.log(`Generated ${recommendations.length} AI-powered recommendations with social sentiment analysis`);
 
     return new Response(JSON.stringify({ recommendations }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

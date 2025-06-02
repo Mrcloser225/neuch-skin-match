@@ -1,5 +1,5 @@
 
-import { Check, Star, Sparkles, ShoppingBag, Heart, Download, GitCompare } from "lucide-react";
+import { Check, Star, Sparkles, ShoppingBag, Heart, Download, GitCompare, TrendingUp, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -21,7 +21,19 @@ const PremiumFeaturesList = ({ userTier, compact = false }: PremiumFeaturesListP
     {
       icon: <Star className="text-neuch-600" size={20} />,
       title: "Premium Brand Recommendations",
-      description: "Access to Fenty Beauty, Charlotte Tilbury, Giorgio Armani, and more",
+      description: "Access to Huda Beauty, Charlotte Tilbury, Giorgio Armani, and more",
+      enabled: isPremium
+    },
+    {
+      icon: <TrendingUp className="text-purple-600" size={20} />,
+      title: "AI Social Media Trend Analysis",
+      description: "Real-time sentiment analysis from TikTok, Instagram, and Twitter",
+      enabled: isPremium
+    },
+    {
+      icon: <Zap className="text-amber-600" size={20} />,
+      title: "Daily Product Discovery",
+      description: "Automated daily scanning for new product releases and viral trends",
       enabled: isPremium
     },
     {

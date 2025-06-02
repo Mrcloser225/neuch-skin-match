@@ -11,6 +11,7 @@ export interface AIRecommendation {
   pricePoint: string;
   specialFeatures: string[];
   color: string;
+  socialSentiment?: number;
 }
 
 export interface UserPreferences {
@@ -50,6 +51,40 @@ export const getAIRecommendations = async (
   }
 };
 
+export const getTrendingProducts = async (): Promise<any> => {
+  try {
+    const { data, error } = await supabase
+      .from('daily_product_discoveries')
+      .select('discovery_data')
+      .order('discovery_date', { ascending: false })
+      .limit(1);
+
+    if (error) {
+      console.error('Error fetching trending products:', error);
+      return null;
+    }
+
+    return data?.[0]?.discovery_data || null;
+  } catch (error) {
+    console.error('Error in getTrendingProducts:', error);
+    return null;
+  }
+};
+
+export const triggerDailyDiscovery = async (): Promise<void> => {
+  try {
+    const { error } = await supabase.functions.invoke('daily-product-discovery');
+    
+    if (error) {
+      console.error('Error triggering daily discovery:', error);
+      throw new Error('Failed to trigger daily discovery');
+    }
+  } catch (error) {
+    console.error('Error in triggerDailyDiscovery:', error);
+    throw error;
+  }
+};
+
 export const getPricePointLabel = (pricePoint: string): string => {
   const labels: Record<string, string> = {
     '$': 'Drugstore',
@@ -68,4 +103,20 @@ export const getPricePointColor = (pricePoint: string): string => {
     '$$$$': 'bg-amber-100 text-amber-800'
   };
   return colors[pricePoint] || 'bg-gray-100 text-gray-800';
+};
+
+export const getSocialSentimentColor = (score: number): string => {
+  if (score >= 9) return 'text-emerald-600';
+  if (score >= 8) return 'text-green-600';
+  if (score >= 7) return 'text-blue-600';
+  if (score >= 6) return 'text-yellow-600';
+  return 'text-red-600';
+};
+
+export const getSocialSentimentLabel = (score: number): string => {
+  if (score >= 9) return 'Viral';
+  if (score >= 8) return 'Trending';
+  if (score >= 7) return 'Popular';
+  if (score >= 6) return 'Rising';
+  return 'Mixed';
 };
