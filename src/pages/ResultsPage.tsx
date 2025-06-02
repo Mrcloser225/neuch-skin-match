@@ -1,6 +1,5 @@
-
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Heart, RefreshCw, Share2, ShoppingBag, Lock, Star, BookOpen, Download } from "lucide-react";
 
@@ -11,6 +10,7 @@ import ShadeCard from "@/components/ShadeCard";
 import ActionButton from "@/components/ActionButton";
 import UndertoneChip from "@/components/UndertoneChip";
 import { useSkin } from "@/contexts/SkinContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Foundation, getRecommendations } from "@/data/foundations";
 import PremiumBanner from "@/components/PremiumBanner";
 import { Button } from "@/components/ui/button";
@@ -24,10 +24,36 @@ interface Recommendation {
 
 const ResultsPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { undertone, skinTone, capturedImage, subscriptionTier, addSavedFoundation } = useSkin();
+  const { checkSubscription, isAuthenticated } = useAuth();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
+  
   const isPremium = subscriptionTier === "premium" || subscriptionTier === "lifetime";
   const isLifetime = subscriptionTier === "lifetime";
+
+  // Check for payment success and update subscription status
+  useEffect(() => {
+    const success = searchParams.get('success');
+    if (success === 'true' && isAuthenticated) {
+      setIsCheckingSubscription(true);
+      // Wait a moment for Stripe to process, then check subscription
+      setTimeout(async () => {
+        try {
+          await checkSubscription();
+          toast({
+            title: "Payment Successful!",
+            description: "Your premium subscription has been activated. You now have access to all premium features!",
+          });
+        } catch (error) {
+          console.error('Error checking subscription after payment:', error);
+        } finally {
+          setIsCheckingSubscription(false);
+        }
+      }, 2000);
+    }
+  }, [searchParams, isAuthenticated, checkSubscription]);
 
   useEffect(() => {
     if (!undertone || !skinTone) {
@@ -99,7 +125,6 @@ const ResultsPage = () => {
       title: "Share Feature",
       description: "Your results have been prepared for sharing",
     });
-    // In a real app, this would open a share dialog or generate a link
   };
   
   const handleShop = () => {
@@ -116,7 +141,6 @@ const ResultsPage = () => {
       title: "Shopping Links",
       description: "Redirecting to partner stores with your matched foundations",
     });
-    // In a real app, this would redirect to shopping sites
   };
   
   const handleViewTutorials = () => {
@@ -133,7 +157,6 @@ const ResultsPage = () => {
       title: "Beauty Tutorials",
       description: "Loading your exclusive beauty tutorials library",
     });
-    // In a real app, this would navigate to a tutorials page
   };
   
   const handleExportReport = () => {
@@ -150,7 +173,6 @@ const ResultsPage = () => {
       title: "Report Generated",
       description: "Your comprehensive beauty report is being prepared for download",
     });
-    // In a real app, this would generate and download a PDF report
   };
 
   if (!undertone || !skinTone) {
@@ -174,6 +196,12 @@ const ResultsPage = () => {
           <div className="flex flex-col gap-6">
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-medium text-neuch-900">Your Perfect Matches</h1>
+              {isCheckingSubscription && (
+                <Badge className="bg-blue-600 text-white text-xs animate-pulse">Updating...</Badge>
+              )}
+              {subscriptionTier === "premium" && (
+                <Badge className="bg-green-600 text-white text-xs">Premium Member</Badge>
+              )}
               {subscriptionTier === "lifetime" && (
                 <Badge className="bg-violet-600 text-white text-xs">Lifetime Member</Badge>
               )}

@@ -33,9 +33,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Rate limiting for subscription checks - increased cooldown
+// Enhanced rate limiting for subscription checks
 let lastSubscriptionCheck = 0;
-const SUBSCRIPTION_CHECK_COOLDOWN = 60000; // 60 seconds
+const SUBSCRIPTION_CHECK_COOLDOWN = 30000; // 30 seconds
 let subscriptionCheckInProgress = false;
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Check subscription status with enhanced rate limiting and error handling
+  // Enhanced subscription check with better error handling
   const checkSubscription = async () => {
     if (!user) {
       console.log('No user, skipping subscription check');
@@ -97,19 +97,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (error) {
         console.error('Error checking subscription:', error);
-        // Don't throw error, just log it to prevent cascading failures
         return;
       }
 
+      console.log('Subscription check response:', data);
+
       if (data?.subscribed) {
         setSubscriptionTier('premium');
+        console.log('User has active premium subscription');
       } else {
         setSubscriptionTier('free');
+        console.log('User has free subscription');
       }
-      console.log('Subscription check completed:', data);
     } catch (error) {
       console.error('Failed to check subscription:', error);
-      // Don't propagate error to prevent UI crashes
     } finally {
       subscriptionCheckInProgress = false;
     }
@@ -125,8 +126,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (session?.user) {
         fetchUserProfile(session.user.id);
-        // Only check subscription on initial load with delay
-        setTimeout(() => checkSubscription(), 2000);
+        // Check subscription on initial load
+        setTimeout(() => checkSubscription(), 1000);
       }
       
       setIsLoading(false);
@@ -144,8 +145,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // Fetch profile when user logs in
           setTimeout(() => {
             fetchUserProfile(session.user.id);
-            // Check subscription only on sign in, with delay
-            setTimeout(() => checkSubscription(), 3000);
+            // Check subscription on sign in
+            setTimeout(() => checkSubscription(), 2000);
           }, 0);
         } else {
           setProfile(null);
