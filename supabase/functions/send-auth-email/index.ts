@@ -33,20 +33,19 @@ Deno.serve(async (req) => {
     const headers = Object.fromEntries(req.headers)
     console.log('Webhook headers:', JSON.stringify(headers, null, 2))
     
-    // If webhook secret is configured, verify the webhook
-    if (hookSecret) {
-      console.log('Webhook secret configured, verifying...')
+    // Only verify webhook if secret is configured AND verification headers are present
+    if (hookSecret && (headers['webhook-signature'] || headers['svix-signature'])) {
+      console.log('Webhook secret configured and signature present, verifying...')
       const wh = new Webhook(hookSecret)
       try {
         wh.verify(payload, headers)
         console.log('Webhook verification successful')
       } catch (error) {
         console.error('Webhook verification failed:', error)
-        console.error('Expected secret format, received headers:', headers)
         return new Response('Unauthorized', { status: 401 })
       }
     } else {
-      console.log('No webhook secret configured, skipping verification')
+      console.log('Skipping webhook verification - either no secret configured or no signature headers present')
     }
 
     const webhookData = JSON.parse(payload)
