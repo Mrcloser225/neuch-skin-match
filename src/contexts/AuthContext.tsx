@@ -33,6 +33,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// Rate limiting for subscription checks
+let lastSubscriptionCheck = 0;
+const SUBSCRIPTION_CHECK_COOLDOWN = 30000; // 30 seconds
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -60,11 +64,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Check subscription status
+  // Check subscription status with rate limiting
   const checkSubscription = async () => {
     if (!user) return;
     
+    const now = Date.now();
+    if (now - lastSubscriptionCheck < SUBSCRIPTION_CHECK_COOLDOWN) {
+      console.log('Subscription check skipped due to rate limiting');
+      return;
+    }
+    
+    lastSubscriptionCheck = now;
+    
     try {
+      console.log('Checking subscription status...');
       const { data, error } = await supabase.functions.invoke('check-subscription');
       
       if (error) {
@@ -77,6 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setSubscriptionTier('free');
       }
+      console.log('Subscription check completed:', data);
     } catch (error) {
       console.error('Failed to check subscription:', error);
     }
@@ -92,7 +106,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (session?.user) {
         fetchUserProfile(session.user.id);
-        checkSubscription();
+        // Only check subscription on initial load, not on every auth change
+        setTimeout(() => checkSubscription(), 1000);
       }
       
       setIsLoading(false);
@@ -101,15 +116,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event);
         setSession(session);
         setUser(session?.user ?? null);
         setIsLoggedIn(!!session?.user);
         
-        if (session?.user) {
+        if (session?.user && event === 'SIGNED_IN') {
           // Fetch profile when user logs in
           setTimeout(() => {
             fetchUserProfile(session.user.id);
-            checkSubscription();
+            // Add delay to prevent rate limiting
+            setTimeout(() => checkSubscription(), 2000);
           }, 0);
         } else {
           setProfile(null);
@@ -124,7 +141,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     return () => subscription.unsubscribe();
-  }, [setIsLoggedIn, setSubscriptionTier, user]);
+  }, [setIsLoggedIn, setSubscriptionTier]);
 
   // Sign up with email and password
   const signUp = async (email: string, password: string, fullName?: string) => {
