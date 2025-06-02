@@ -76,19 +76,19 @@ serve(async (req) => {
       )
     }
 
-    // Define pricing plans
+    // Define pricing plans with dynamic price creation
     const plans = {
       'premium-monthly': {
-        priceId: 'price_1QVxdOLcV8LvL5WdHI9BAbGR',
         amount: 999, // $9.99 in cents
         currency: 'usd',
-        interval: 'month'
+        interval: 'month',
+        name: 'Premium Monthly'
       },
       'premium-yearly': {
-        priceId: 'price_1QVxdpLcV8LvL5WdCjR2oQbK',
         amount: 4999, // $49.99 in cents
         currency: 'usd',
-        interval: 'year'
+        interval: 'year',
+        name: 'Premium Yearly'
       }
     }
 
@@ -103,7 +103,7 @@ serve(async (req) => {
 
     console.log('Selected plan:', selectedPlan)
 
-    // Create Stripe checkout session directly with price ID
+    // Create Stripe checkout session with dynamic pricing
     const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
@@ -112,7 +112,10 @@ serve(async (req) => {
       },
       body: new URLSearchParams({
         'mode': 'subscription',
-        'line_items[0][price]': selectedPlan.priceId,
+        'line_items[0][price_data][currency]': selectedPlan.currency,
+        'line_items[0][price_data][product_data][name]': selectedPlan.name,
+        'line_items[0][price_data][unit_amount]': selectedPlan.amount.toString(),
+        'line_items[0][price_data][recurring][interval]': selectedPlan.interval,
         'line_items[0][quantity]': '1',
         'success_url': `${req.headers.get('origin') || 'https://lovable.dev'}/results?success=true`,
         'cancel_url': `${req.headers.get('origin') || 'https://lovable.dev'}/pricing?canceled=true`,
