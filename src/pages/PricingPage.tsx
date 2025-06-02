@@ -102,9 +102,9 @@ const pricingPlans: PricingPlan[] = [
 const PricingPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { subscriptionTier, setSubscriptionTier } = useSkin();
+  const { subscriptionTier, setSubscriptionTier, skinTone, undertone } = useSkin();
   const { isAuthenticated, user } = useAuth();
-  const [isProcessing, setIsProcessing] = useState<string | null>(null); // Track which plan is processing
+  const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
   const handleSubscribe = async (plan: PricingPlan) => {
     if (plan.tier === "free") {
@@ -113,7 +113,13 @@ const PricingPage = () => {
         title: "Free plan activated",
         description: "You are now using the free plan. Upgrade anytime to access premium features.",
       });
-      navigate("/results");
+      
+      // Check if user has completed skin analysis before redirecting to results
+      if (skinTone && undertone) {
+        navigate("/results");
+      } else {
+        navigate("/camera");
+      }
       return;
     }
     
@@ -127,14 +133,13 @@ const PricingPage = () => {
       return;
     }
 
-    setIsProcessing(plan.id); // Set processing state for this specific plan
+    setIsProcessing(plan.id);
     
     try {
       console.log("Creating checkout session for plan:", plan.id);
       console.log("User authenticated:", isAuthenticated);
       console.log("User ID:", user?.id);
       
-      // Get the current session to ensure we have a valid token
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
@@ -173,13 +178,11 @@ const PricingPage = () => {
 
       console.log("Redirecting to checkout URL:", data.url);
 
-      // Show success message before redirect
       toast({
         title: "Redirecting to checkout",
         description: "Opening Stripe checkout in a new tab...",
       });
 
-      // Open Stripe checkout in a new tab
       window.open(data.url, '_blank');
       
     } catch (error) {
@@ -203,7 +206,7 @@ const PricingPage = () => {
         variant: "destructive"
       });
     } finally {
-      setIsProcessing(null); // Clear processing state
+      setIsProcessing(null);
     }
   };
 
@@ -211,7 +214,7 @@ const PricingPage = () => {
     <PageTransition>
       <div className="min-h-screen flex flex-col bg-white">
         <header className="p-6 flex items-center border-b border-gray-100">
-          <BackButton to="/results" />
+          <BackButton to={skinTone && undertone ? "/results" : "/"} />
           <Logo className="mx-auto" />
         </header>
 

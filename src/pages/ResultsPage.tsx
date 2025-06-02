@@ -49,12 +49,10 @@ const ResultsPage = () => {
   const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
+    // Check if we have skin data, if not redirect to camera page instead of showing error
     if (!skinTone || !undertone) {
-      toast({
-        title: "Missing skin data",
-        description: "Please scan your skin first to get personalized recommendations.",
-      });
-      navigate("/");
+      console.log("Missing skin data, redirecting to camera page");
+      navigate("/camera");
       return;
     }
 
@@ -65,7 +63,27 @@ const ResultsPage = () => {
     const recs = getPremiumRecommendations(undertone, skinTone, premiumStatus);
     setRecommendations(recs);
     setIsLoading(false);
-  }, [skinTone, undertone, subscriptionTier, navigate, toast]);
+  }, [skinTone, undertone, subscriptionTier, navigate]);
+
+  // Show loading while checking for skin data
+  if (!skinTone || !undertone) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-neuch-50 to-neuch-100">
+          <header className="p-6 flex items-center border-b border-gray-100">
+            <BackButton to="/" />
+            <Logo className="mx-auto" />
+          </header>
+          <main className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <p className="text-neuch-600">Redirecting to skin analysis...</p>
+            </div>
+          </main>
+        </div>
+      </PageTransition>
+    );
+  }
 
   const exportReport = () => {
     toast({
@@ -100,9 +118,7 @@ const ResultsPage = () => {
             {/* Results Summary */}
             <div className="text-center">
               <h1 className="text-3xl font-bold text-neuch-900 mb-3">
-                {skinTone && undertone
-                  ? "Here are your personalized foundation matches"
-                  : "Analyzing Your Skin..."}
+                Here are your personalized foundation matches
               </h1>
               <p className="text-neuch-600">
                 Based on your skin tone and undertone, we've found the following
@@ -169,21 +185,27 @@ const ResultsPage = () => {
                 />
               )}
 
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {recommendations.map((rec, index) => (
-                  <EnhancedShadeCard
-                    key={`${rec.foundation.brand}-${rec.foundation.shade}`}
-                    brand={rec.foundation.brand}
-                    name={rec.foundation.name}
-                    shade={rec.foundation.shade}
-                    color={rec.foundation.color}
-                    match={rec.match}
-                    confidence={rec.confidence}
-                    reasons={rec.reasons}
-                    onClick={() => setSelectedFoundation(rec.foundation)}
-                  />
-                ))}
-              </div>
+              {isLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {recommendations.map((rec, index) => (
+                    <EnhancedShadeCard
+                      key={`${rec.foundation.brand}-${rec.foundation.shade}`}
+                      brand={rec.foundation.brand}
+                      name={rec.foundation.name}
+                      shade={rec.foundation.shade}
+                      color={rec.foundation.color}
+                      match={rec.match}
+                      confidence={rec.confidence}
+                      reasons={rec.reasons}
+                      onClick={() => setSelectedFoundation(rec.foundation)}
+                    />
+                  ))}
+                </div>
+              )}
 
               {/* Shade Comparison Section */}
               {selectedFoundation && (
