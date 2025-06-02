@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart, RefreshCw, Share2, ShoppingBag, Lock, Star, BookOpen, Download } from "lucide-react";
+import { Heart, RefreshCw, Share2, ShoppingBag, Lock, Star, BookOpen, Download, BarChart3 } from "lucide-react";
 
 import PageTransition from "@/components/PageTransition";
 import BackButton from "@/components/BackButton";
@@ -9,25 +9,22 @@ import Logo from "@/components/Logo";
 import ShadeCard from "@/components/ShadeCard";
 import ActionButton from "@/components/ActionButton";
 import UndertoneChip from "@/components/UndertoneChip";
+import FoundationComparison from "@/components/FoundationComparison";
 import { useSkin } from "@/contexts/SkinContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { Foundation, getRecommendations } from "@/data/foundations";
+import { getPremiumRecommendations, PremiumRecommendation, getShoppingUrl } from "@/services/premiumRecommendations";
 import PremiumBanner from "@/components/PremiumBanner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-
-interface Recommendation {
-  foundation: Foundation;
-  match: number;
-}
 
 const ResultsPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { undertone, skinTone, capturedImage, subscriptionTier, addSavedFoundation } = useSkin();
   const { checkSubscription, isAuthenticated } = useAuth();
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [recommendations, setRecommendations] = useState<PremiumRecommendation[]>([]);
+  const [comparedFoundations, setComparedFoundations] = useState<PremiumRecommendation[]>([]);
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
   
   const isPremium = subscriptionTier === "premium" || subscriptionTier === "lifetime";
@@ -61,10 +58,10 @@ const ResultsPage = () => {
       return;
     }
 
-    // Get recommendations based on undertone and skin tone
-    const results = getRecommendations(undertone, skinTone);
+    // Get premium recommendations
+    const results = getPremiumRecommendations(undertone, skinTone, isPremium);
     setRecommendations(results);
-  }, [undertone, skinTone, navigate]);
+  }, [undertone, skinTone, navigate, isPremium]);
 
   const container = {
     hidden: { opacity: 0 },
@@ -89,8 +86,8 @@ const ResultsPage = () => {
   const handleUpgrade = () => {
     navigate("/pricing");
   };
-  
-  const handleSave = (recommendation: Recommendation) => {
+
+  const handleSave = (recommendation: PremiumRecommendation) => {
     if (!isPremium) {
       toast({
         title: "Premium Feature",
@@ -121,13 +118,26 @@ const ResultsPage = () => {
       return;
     }
     
-    toast({
-      title: "Share Feature",
-      description: "Your results have been prepared for sharing",
-    });
+    // Create shareable content
+    const shareData = {
+      title: 'My Foundation Matches',
+      text: `I found my perfect foundation matches! Check out these ${recommendations.length} personalized recommendations.`,
+      url: window.location.href
+    };
+    
+    if (navigator.share) {
+      navigator.share(shareData);
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+      toast({
+        title: "Results Copied",
+        description: "Your results have been copied to clipboard for sharing",
+      });
+    }
   };
   
-  const handleShop = () => {
+  const handleShop = (recommendation: PremiumRecommendation) => {
     if (!isPremium) {
       toast({
         title: "Premium Feature",
@@ -137,10 +147,8 @@ const ResultsPage = () => {
       return;
     }
     
-    toast({
-      title: "Shopping Links",
-      description: "Redirecting to partner stores with your matched foundations",
-    });
+    const url = getShoppingUrl(recommendation.foundation.brand, recommendation.foundation.shade);
+    window.open(url, '_blank');
   };
   
   const handleViewTutorials = () => {
@@ -169,10 +177,66 @@ const ResultsPage = () => {
       return;
     }
     
+    // Generate and download report
+    const report = generateDetailedReport();
+    downloadReport(report);
+  };
+
+  const generateDetailedReport = () => {
+    const reportData = {
+      analysis: {
+        undertone,
+        skinTone,
+        timestamp: new Date().toISOString()
+      },
+      recommendations: recommendations.map(rec => ({
+        brand: rec.foundation.brand,
+        name: rec.foundation.name,
+        shade: rec.foundation.shade,
+        match: rec.match,
+        confidence: rec.confidence,
+        reasons: rec.reasons
+      })),
+      summary: {
+        totalMatches: recommendations.length,
+        topMatch: recommendations[0],
+        averageMatch: Math.round(recommendations.reduce((sum, r) => sum + r.match, 0) / recommendations.length)
+      }
+    };
+    return reportData;
+  };
+
+  const downloadReport = (data: any) => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `foundation-report-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
     toast({
-      title: "Report Generated",
-      description: "Your comprehensive beauty report is being prepared for download",
+      title: "Report Downloaded",
+      description: "Your comprehensive beauty report has been downloaded",
     });
+  };
+
+  const handleAddToComparison = (recommendation: PremiumRecommendation) => {
+    if (comparedFoundations.length >= 4) {
+      toast({
+        title: "Comparison Limit",
+        description: "You can compare up to 4 foundations at once",
+        variant: "destructive"
+      });
+      return;
+    }
+    setComparedFoundations(prev => [...prev, recommendation]);
+  };
+
+  const handleRemoveFromComparison = (id: string) => {
+    setComparedFoundations(prev => prev.filter(item => item.foundation.id !== id));
   };
 
   if (!undertone || !skinTone) {
@@ -208,6 +272,20 @@ const ResultsPage = () => {
               {undertone && <UndertoneChip type={undertone} className="ml-auto" />}
             </div>
 
+            {isPremium && (
+              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <Star className="text-green-600" size={16} />
+                  <h3 className="text-sm font-medium text-green-900">
+                    Premium Analysis Complete
+                  </h3>
+                </div>
+                <p className="text-xs text-green-700">
+                  Found {recommendations.length} personalized matches from premium brands with detailed analysis
+                </p>
+              </div>
+            )}
+
             {capturedImage && (
               <div className="flex gap-4 overflow-x-auto py-2 no-scrollbar">
                 <div className="h-16 w-16 flex-shrink-0 rounded-full overflow-hidden border border-neuch-200">
@@ -225,7 +303,7 @@ const ResultsPage = () => {
             )}
 
             {!isPremium && (
-              <PremiumBanner onUpgrade={handleUpgrade} />
+              <PremiumBanner onUpgrade={() => navigate("/pricing")} />
             )}
 
             <motion.div
@@ -234,15 +312,18 @@ const ResultsPage = () => {
               initial="hidden"
               animate="show"
             >
-              {displayedRecommendations.map(({ foundation, match }) => (
-                <motion.div key={foundation.id} variants={item}>
+              {displayedRecommendations.map((recommendation) => (
+                <motion.div key={recommendation.foundation.id} variants={item}>
                   <ShadeCard
-                    brand={foundation.brand}
-                    name={foundation.name}
-                    shade={foundation.shade}
-                    color={foundation.color}
-                    match={match}
-                    onClick={() => handleSave({ foundation, match })}
+                    brand={recommendation.foundation.brand}
+                    name={recommendation.foundation.name}
+                    shade={recommendation.foundation.shade}
+                    color={recommendation.foundation.color}
+                    match={recommendation.match}
+                    onClick={() => handleSave(recommendation)}
+                    isPremium={isPremium}
+                    confidence={recommendation.confidence}
+                    reasons={recommendation.reasons}
                   />
                 </motion.div>
               ))}
@@ -259,12 +340,21 @@ const ResultsPage = () => {
                   </div>
                   <Button 
                     className="w-full" 
-                    onClick={handleUpgrade}
+                    onClick={() => navigate("/pricing")}
                   >
                     Upgrade to Premium
                   </Button>
                 </div>
               </div>
+            )}
+
+            {isPremium && (
+              <FoundationComparison
+                recommendations={recommendations}
+                onAddToComparison={handleAddToComparison}
+                onRemoveFromComparison={handleRemoveFromComparison}
+                comparedItems={comparedFoundations}
+              />
             )}
             
             {isLifetime && (
@@ -305,7 +395,7 @@ const ResultsPage = () => {
             <ActionButton
               icon={<Heart size={18} className="text-neuch-700" />}
               label="Save"
-              onClick={() => handleSave(recommendations[0])}
+              onClick={() => recommendations[0] && handleSave(recommendations[0])}
               disabled={!isPremium}
             />
             <ActionButton
@@ -317,13 +407,13 @@ const ResultsPage = () => {
             <ActionButton
               icon={<ShoppingBag size={18} className="text-neuch-700" />}
               label="Shop"
-              onClick={handleShop}
+              onClick={() => recommendations[0] && handleShop(recommendations[0])}
               disabled={!isPremium}
             />
             <ActionButton
               icon={<RefreshCw size={18} className="text-neuch-700" />}
               label="New Scan"
-              onClick={handleNewScan}
+              onClick={() => navigate("/camera")}
             />
           </div>
         </footer>
