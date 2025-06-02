@@ -78,20 +78,19 @@ const App = () => {
             <LanguageProvider>
               <SkinProvider>
                 <AuthProvider>
-                  <AnimatePresence mode="wait">
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/auth" element={<AuthPage />} />
-                      <Route path="/camera" element={<CameraPage />} />
-                      <Route path="/analysis" element={<AnalysisPage />} />
-                      <Route path="/results" element={<ResultsPage />} />
-                      <Route path="/pricing" element={<PricingPage />} />
-                      <Route path="/shop" element={<ShopPage />} />
-                      <Route path="/privacy" element={<PrivacyPolicy />} />
-                      <Route path="/terms" element={<TermsOfService />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </AnimatePresence>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/login" element={<AuthPage />} />
+                    <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/camera" element={<CameraPage />} />
+                    <Route path="/analysis" element={<AnalysisPage />} />
+                    <Route path="/results" element={<ResultsPage />} />
+                    <Route path="/pricing" element={<PricingPage />} />
+                    <Route path="/shop" element={<ShopPage />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<TermsOfService />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
                 </AuthProvider>
               </SkinProvider>
             </LanguageProvider>

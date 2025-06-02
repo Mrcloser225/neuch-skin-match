@@ -16,7 +16,9 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neuch-50 to-neuch-100">
-      <LoginModal isOpen={true} onClose={() => navigate("/")} />
+      <div className="w-full max-w-md">
+        <LoginModal isOpen={true} onClose={() => navigate("/")} />
+      </div>
     </div>
   );
 };
