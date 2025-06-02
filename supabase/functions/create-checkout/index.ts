@@ -103,7 +103,7 @@ serve(async (req) => {
 
     console.log('Selected plan:', selectedPlan)
 
-    // Create Stripe checkout session
+    // Create Stripe checkout session directly with price ID
     const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
@@ -120,6 +120,7 @@ serve(async (req) => {
         'client_reference_id': user.id,
         'metadata[user_id]': user.id,
         'metadata[plan_id]': planId,
+        'allow_promotion_codes': 'true',
       }),
     })
 
