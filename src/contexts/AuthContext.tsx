@@ -33,9 +33,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Rate limiting for subscription checks
+// Rate limiting for subscription checks - increased cooldown
 let lastSubscriptionCheck = 0;
-const SUBSCRIPTION_CHECK_COOLDOWN = 30000; // 30 seconds
+const SUBSCRIPTION_CHECK_COOLDOWN = 60000; // 60 seconds
+let subscriptionCheckInProgress = false;
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -64,9 +65,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Check subscription status with rate limiting
+  // Check subscription status with enhanced rate limiting and error handling
   const checkSubscription = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user, skipping subscription check');
+      return;
+    }
     
     const now = Date.now();
     if (now - lastSubscriptionCheck < SUBSCRIPTION_CHECK_COOLDOWN) {
@@ -74,14 +78,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     
+    if (subscriptionCheckInProgress) {
+      console.log('Subscription check already in progress');
+      return;
+    }
+    
     lastSubscriptionCheck = now;
+    subscriptionCheckInProgress = true;
     
     try {
       console.log('Checking subscription status...');
-      const { data, error } = await supabase.functions.invoke('check-subscription');
+      
+      const { data, error } = await supabase.functions.invoke('check-subscription', {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
       
       if (error) {
         console.error('Error checking subscription:', error);
+        // Don't throw error, just log it to prevent cascading failures
         return;
       }
 
@@ -93,6 +109,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('Subscription check completed:', data);
     } catch (error) {
       console.error('Failed to check subscription:', error);
+      // Don't propagate error to prevent UI crashes
+    } finally {
+      subscriptionCheckInProgress = false;
     }
   };
 
@@ -106,8 +125,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (session?.user) {
         fetchUserProfile(session.user.id);
-        // Only check subscription on initial load, not on every auth change
-        setTimeout(() => checkSubscription(), 1000);
+        // Only check subscription on initial load with delay
+        setTimeout(() => checkSubscription(), 2000);
       }
       
       setIsLoading(false);
@@ -125,8 +144,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // Fetch profile when user logs in
           setTimeout(() => {
             fetchUserProfile(session.user.id);
-            // Add delay to prevent rate limiting
-            setTimeout(() => checkSubscription(), 2000);
+            // Check subscription only on sign in, with delay
+            setTimeout(() => checkSubscription(), 3000);
           }, 0);
         } else {
           setProfile(null);
