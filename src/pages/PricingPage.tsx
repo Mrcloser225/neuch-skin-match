@@ -56,7 +56,6 @@ const pricingPlans: PricingPlan[] = [
     price: 9.99,
     description: "Full access to all features, billed monthly",
     tier: "premium",
-    stripePrice: "price_YOUR_MONTHLY_PREMIUM_ID",
     billingCycleText: "/month",
     features: [
       { text: "Basic skin tone analysis", included: true },
@@ -82,7 +81,6 @@ const pricingPlans: PricingPlan[] = [
     tier: "premium",
     popular: true,
     badge: "Best Value",
-    stripePrice: "price_YOUR_YEARLY_PREMIUM_ID",
     billingCycleText: "/year",
     features: [
       { text: "Basic skin tone analysis", included: true },
@@ -130,49 +128,11 @@ const PricingPage = () => {
       return;
     }
 
-    if (!plan.stripePrice || plan.stripePrice.startsWith("price_YOUR_")) {
-      toast({
-        title: "Configuration Incomplete",
-        description: "This plan is not yet configured for payments. Please contact support or replace placeholder Stripe Price ID.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-    
-    try {
-      const createCheckoutSession = async () => {
-        console.log("Creating checkout session for Stripe Price ID:", plan.stripePrice);
-        return new Promise<{url: string}>((resolve) => {
-          setTimeout(() => {
-            const checkoutUrl = `https://checkout.stripe.com/pay/cs_test_YOUR_SESSION_ID_FOR_${plan.id}`;
-            resolve({url: checkoutUrl});
-          }, 1000);
-        });
-      };
-      
-      const { url } = await createCheckoutSession();
-      window.open(url, '_blank');
-      
-      setTimeout(() => {
-        setSubscriptionTier(plan.tier);
-        setIsProcessing(false);
-        toast({
-          title: "Subscription processing",
-          description: `Your subscription to ${plan.name} is being processed. Please check your Stripe dashboard for confirmation.`,
-        });
-      }, 3000);
-      
-    } catch (error) {
-      console.error("Payment processing error:", error);
-      setIsProcessing(false);
-      toast({
-        title: "Payment processing failed",
-        description: "There was a problem processing your payment. Please try again.",
-        variant: "destructive"
-      });
-    }
+    // Show coming soon message for premium plans
+    toast({
+      title: "Coming Soon",
+      description: "Premium subscriptions will be available soon! We're setting up secure payment processing.",
+    });
   };
 
   return (
@@ -208,6 +168,13 @@ const PricingPage = () => {
                   {plan.badge && (
                     <div className="absolute -top-3 left-0 right-0 mx-auto w-fit bg-black text-white px-3 py-1 rounded-full text-xs font-medium">
                       {plan.badge}
+                    </div>
+                  )}
+                  {plan.tier === "premium" && (
+                    <div className="absolute top-4 right-4">
+                      <Badge variant="secondary" className="text-xs">
+                        Coming Soon
+                      </Badge>
                     </div>
                   )}
                   <CardHeader>
