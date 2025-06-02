@@ -22,6 +22,9 @@ import {
   Palette,
   SlidersHorizontal,
   User,
+  Sparkles,
+  Settings,
+  Heart,
 } from "lucide-react";
 
 import PageTransition from "@/components/PageTransition";
