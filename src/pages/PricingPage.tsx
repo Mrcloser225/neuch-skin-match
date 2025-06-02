@@ -1,8 +1,8 @@
-
 import { CheckIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 import PageTransition from "@/components/PageTransition";
 import Logo from "@/components/Logo";
@@ -22,7 +22,6 @@ interface PricingPlan {
   popular?: boolean;
   tier: "free" | "premium";
   badge?: string;
-  stripePrice?: string;
   billingCycleText?: string;
 }
 
@@ -128,11 +127,35 @@ const PricingPage = () => {
       return;
     }
 
-    // Show coming soon message for premium plans
-    toast({
-      title: "Coming Soon",
-      description: "Premium subscriptions will be available soon! We're setting up secure payment processing.",
-    });
+    setIsProcessing(true);
+    
+    try {
+      console.log("Creating checkout session for plan:", plan.id);
+      
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { planId: plan.id }
+      });
+
+      if (error) throw error;
+
+      // Open Stripe checkout in a new tab
+      window.open(data.url, '_blank');
+      
+      toast({
+        title: "Redirecting to checkout",
+        description: "Opening Stripe checkout in a new tab...",
+      });
+      
+    } catch (error) {
+      console.error("Payment processing error:", error);
+      toast({
+        title: "Payment processing failed",
+        description: "There was a problem processing your payment. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -170,13 +193,6 @@ const PricingPage = () => {
                       {plan.badge}
                     </div>
                   )}
-                  {plan.tier === "premium" && (
-                    <div className="absolute top-4 right-4">
-                      <Badge variant="secondary" className="text-xs">
-                        Coming Soon
-                      </Badge>
-                    </div>
-                  )}
                   <CardHeader>
                     <CardTitle className="text-xl font-bold">{plan.name}</CardTitle>
                     <CardDescription className="text-gray-600">{plan.description}</CardDescription>
@@ -210,7 +226,8 @@ const PricingPage = () => {
                       {subscriptionTier === plan.tier && plan.tier !== 'free' ? "Current Plan" : 
                        subscriptionTier === 'free' && plan.tier === 'free' ? "Current Plan" :
                         plan.tier === "free" ? "Select Free Plan" : 
-                        !isAuthenticated ? "Sign In to Subscribe" : `Get ${plan.name}`}
+                        !isAuthenticated ? "Sign In to Subscribe" : 
+                        isProcessing ? "Processing..." : `Get ${plan.name}`}
                     </Button>
                   </CardFooter>
                 </Card>

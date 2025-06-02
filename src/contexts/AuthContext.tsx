@@ -1,4 +1,3 @@
-
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +28,7 @@ interface AuthContextType {
   signInWithOAuth: (provider: Exclude<SocialProvider, "email">) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Pick<UserProfile, 'full_name' | 'avatar_url'>>) => Promise<void>;
+  checkSubscription: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { setIsLoggedIn } = useSkin();
+  const { setIsLoggedIn, setSubscriptionTier } = useSkin();
 
   // Fetch user profile from our database
   const fetchUserProfile = async (userId: string) => {
@@ -60,6 +60,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Check subscription status
+  const checkSubscription = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      
+      if (error) {
+        console.error('Error checking subscription:', error);
+        return;
+      }
+
+      if (data?.subscribed) {
+        setSubscriptionTier('premium');
+      } else {
+        setSubscriptionTier('free');
+      }
+    } catch (error) {
+      console.error('Failed to check subscription:', error);
+    }
+  };
+
   // Set up auth state listener
   useEffect(() => {
     // Get initial session
@@ -70,6 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (session?.user) {
         fetchUserProfile(session.user.id);
+        checkSubscription();
       }
       
       setIsLoading(false);
@@ -86,19 +109,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // Fetch profile when user logs in
           setTimeout(() => {
             fetchUserProfile(session.user.id);
+            checkSubscription();
           }, 0);
         } else {
           setProfile(null);
+          setSubscriptionTier('free');
         }
 
         if (event === 'SIGNED_OUT') {
           setProfile(null);
+          setSubscriptionTier('free');
         }
       }
     );
 
     return () => subscription.unsubscribe();
-  }, [setIsLoggedIn]);
+  }, [setIsLoggedIn, setSubscriptionTier, user]);
 
   // Sign up with email and password
   const signUp = async (email: string, password: string, fullName?: string) => {
@@ -256,6 +282,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signInWithOAuth,
         signOut,
         updateProfile,
+        checkSubscription,
       }}
     >
       {children}
