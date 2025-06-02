@@ -16,6 +16,18 @@ serve(async (req) => {
   try {
     console.log('=== Create Checkout Function Started ===')
     
+    // Check if Stripe secret key is configured
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
+    if (!stripeSecretKey) {
+      console.error('Stripe secret key not configured')
+      return new Response(
+        JSON.stringify({ error: 'Payment processor not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    console.log('Stripe key configured successfully')
+
     // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -64,28 +76,16 @@ serve(async (req) => {
       )
     }
 
-    // Check if Stripe secret key is configured
-    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
-    if (!stripeSecretKey) {
-      console.error('Stripe secret key not configured')
-      return new Response(
-        JSON.stringify({ error: 'Payment processor not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    console.log('Stripe key configured:', !!stripeSecretKey)
-
     // Define pricing plans
     const plans = {
       'premium-monthly': {
-        priceId: 'price_1QVxdOLcV8LvL5WdHI9BAbGR', // Replace with your actual Stripe price ID
+        priceId: 'price_1QVxdOLcV8LvL5WdHI9BAbGR',
         amount: 999, // $9.99 in cents
         currency: 'usd',
         interval: 'month'
       },
       'premium-yearly': {
-        priceId: 'price_1QVxdpLcV8LvL5WdCjR2oQbK', // Replace with your actual Stripe price ID
+        priceId: 'price_1QVxdpLcV8LvL5WdCjR2oQbK',
         amount: 4999, // $49.99 in cents
         currency: 'usd',
         interval: 'year'
@@ -139,7 +139,7 @@ serve(async (req) => {
     }
 
     const session = await stripeResponse.json()
-    console.log('Stripe session created:', session.id)
+    console.log('Stripe session created successfully:', session.id)
 
     return new Response(
       JSON.stringify({ url: session.url }),

@@ -174,8 +174,14 @@ const PricingPage = () => {
 
       console.log("Redirecting to checkout URL:", data.url);
 
-      // Redirect to Stripe checkout
-      window.location.href = data.url;
+      // Show success message before redirect
+      toast({
+        title: "Redirecting to checkout",
+        description: "Opening Stripe checkout in a new tab...",
+      });
+
+      // Open Stripe checkout in a new tab
+      window.open(data.url, '_blank');
       
     } catch (error) {
       console.error("Payment processing error:", error);
