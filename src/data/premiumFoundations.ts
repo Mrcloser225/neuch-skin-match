@@ -18,10 +18,10 @@ export const premiumFoundations: Foundation[] = [
   { id: 'ct-4', brand: 'Charlotte Tilbury', name: 'Airbrush Flawless Foundation', shade: '4 Light', color: '#F2D3B3', undertone: 'neutral', coverage: 'full', finish: 'natural', price: 44 },
   
   // Giorgio Armani
-  { id: 'armani-2', brand: 'Giorgio Armani', name: 'Luminous Silk Foundation', shade: '2', color: '#F9E6D2', undertone: 'cool', coverage: 'medium', finish: 'luminous', price: 64 },
-  { id: 'armani-3', brand: 'Giorgio Armani', name: 'Luminous Silk Foundation', shade: '3', color: '#F7E0C8', undertone: 'neutral', coverage: 'medium', finish: 'luminous', price: 64 },
-  { id: 'armani-4', brand: 'Giorgio Armani', name: 'Luminous Silk Foundation', shade: '4', color: '#F5DABC', undertone: 'neutral', coverage: 'medium', finish: 'luminous', price: 64 },
-  { id: 'armani-5', brand: 'Giorgio Armani', name: 'Luminous Silk Foundation', shade: '5', color: '#F3D4B0', undertone: 'neutral', coverage: 'medium', finish: 'luminous', price: 64 },
+  { id: 'armani-2', brand: 'Giorgio Armani', name: 'Luminous Silk Foundation', shade: '2', color: '#F9E6D2', undertone: 'cool', coverage: 'medium', finish: 'natural', price: 64 },
+  { id: 'armani-3', brand: 'Giorgio Armani', name: 'Luminous Silk Foundation', shade: '3', color: '#F7E0C8', undertone: 'neutral', coverage: 'medium', finish: 'natural', price: 64 },
+  { id: 'armani-4', brand: 'Giorgio Armani', name: 'Luminous Silk Foundation', shade: '4', color: '#F5DABC', undertone: 'neutral', coverage: 'medium', finish: 'natural', price: 64 },
+  { id: 'armani-5', brand: 'Giorgio Armani', name: 'Luminous Silk Foundation', shade: '5', color: '#F3D4B0', undertone: 'neutral', coverage: 'medium', finish: 'natural', price: 64 },
   
   // Dior
   { id: 'dior-0n', brand: 'Dior', name: 'Forever Foundation', shade: '0N Neutral', color: '#F8E5D1', undertone: 'neutral', coverage: 'full', finish: 'matte', price: 52 },
